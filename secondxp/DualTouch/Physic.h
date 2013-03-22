@@ -44,7 +44,7 @@ public:
 	void render();
 
 	void resetRigidBody(btRigidBody* body);
-	void delthrown(vector<btRigidBody*> thrown,vector<Object*> thrown_object);
+	void delthrown(vector<btRigidBody*> thrown);
 	void deleteRigidBody(btRigidBody* body);
 
 	btRigidBody* addRigidBody(float mass, btTransform * startTransform,btCollisionShape* shape);

@@ -39,21 +39,21 @@ class HapticData
 		m_near = new btVector3(MAXSCLAR,MAXSCLAR,MAXSCLAR);
 		m_smother =MAXSMOOTH_LOOP;m_currentThrown = NULL;m_done = false;
 		m_continusFeadBack = false;
+		m_oldPosition.set(0,0,0);
 	};
 	HapticData(){m_id=-1;m_ready=false;m_nbCollision=0;m_currentThrown = NULL;};
 	HHD m_id;
 	hduVector3Dd m_position;
+	hduVector3Dd m_oldPosition;
 	hduVector3Dd m_force;
 	HDdouble m_transform[16];
 	hduVector3Dd m_realPosition;	
 	HDint m_buttons;
 	bool m_ready;
 	int m_nbCollision;
-	btVector3* m_near;
-	std::vector <btRigidBody *> m_thrown;
+	btVector3* m_near;	
 	btRigidBody * m_currentThrown;	
-	btScalar setNear();
-	hduVector3Dd m_target;	
+	btScalar setNear();	
 	int m_smother;
 	bool m_done;
 	bool m_continusFeadBack;
@@ -116,6 +116,8 @@ public:
 	void setDThrownObject(std::vector <Object *> thrown_object);
 	void setDThrownObject(Object * thrown);
 	void setImpactPos(btVector3* pos);
+	hduVector3Dd trajectoryLine(hduVector3Dd point1,hduVector3Dd point2);
+	HDdouble distanceToPath(hduVector3Dd path,hduVector3Dd point);
 
 	bool isReadyLaunch();
 	void setWaitLunch();
@@ -137,6 +139,8 @@ private:
 	btVector3* m_impactPos;
 	btScalar m_variator; 
 	Object* m_ThrownObject;
+	std::vector <Object *> m_thrownObjects;
+	std::vector <btRigidBody *> m_thrown;
 	bool m_canLaunch;
 	btRigidBody* m_ground;
 };

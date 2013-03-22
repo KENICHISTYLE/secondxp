@@ -172,16 +172,52 @@ void DualTouch::throwObject(){
 		m_impactY = m_hds.getEffectorPosition().y();		
 		btScalar alpha = setVelocityTarget(m_timeSpeed,m_curentThrowed,initial_x); 
 		btVector3 final = getFinalPos(t,initial_x);
-		m_hds.setImpactPos(&final);
-		//rotateCanon(&targetpos);
-		//m_throwed_object_list.push_back(m_renderer.addObject(new Object(shape,t,blue)));
-		//m_throwed_rigid_list.push_back(body);
-		//m_hds.setDThrownList(m_throwed_rigid_list);
-		//m_hds.setDThrownObject(m_throwed_object_list);
-		//deleteThrowedObjects();
+		m_hds.setImpactPos(&final);		
 
 		
 }
+
+void DualTouch::throwMultiObject(btScalar Onumber){
+	    float hx = 0.3f;
+		float hy = 0.3f;
+		float hz = 0.3f;
+		const btScalar halfSize = 0.5f;
+		int r = 6;
+		
+		deleteThrowedObjects();	
+
+		btVector3 targetpos = btVector3(0,15,m_lunch_z);
+		btTransform * t ; 		
+		
+		btCollisionShape * shape ;	
+
+		btRigidBody* body;
+
+		m_impactY = m_hds.getEffectorPosition().y();		
+		
+		for(btScalar i = 0;i<Onumber;i++)
+		{	
+		  int f = rand() % r;
+		  int initial_x = f-r/2;
+		  shape = new btSphereShape (hx);
+		  t = new btTransform(btQuaternion(),targetpos); 
+		  body = m_physic.addRigidBody(BALL_MASS,t,shape);
+		  btScalar alpha = setVelocityTarget(m_timeSpeed,body,initial_x); 
+		  m_throwed_rigid_list.push_back(body);
+		  m_throwed_object_list.push_back(m_renderer.addObject(new Object(shape,t,blue)));
+		}
+		  	
+		m_hds.setDThrownList(m_throwed_rigid_list);			
+		m_hds.setDThrownObject(m_throwed_object_list);	
+			
+}
+
+void DualTouch::setTheTargetFinalPos(btRigidBody* target,btScalar initial_x){
+
+		btVector3 final = getFinalPos(&target->getWorldTransform(),initial_x);
+		m_hds.setImpactPos(&final);
+}
+		
 
 btVector3 DualTouch::getFinalPos(btTransform* target, btScalar vx){
 	btScalar time = 0;	
@@ -213,22 +249,26 @@ btScalar DualTouch::setVelocityTarget(btScalar time,btRigidBody* target,btScalar
 }
 
 void DualTouch::deleteThrowedObjects(){
+
+	if(m_throwed_rigid_list.size() > 0){
+	 // clear rigd bodies		
+	m_physic.delthrown(m_throwed_rigid_list);	 
+			
 	
-	 // clear rigd bodies	
-	m_physic.delthrown(m_throwed_rigid_list, m_throwed_object_list);
-	
-	 
     // clear graphics
-	for (vector<Object*>::iterator i = m_throwed_object_list.begin(); i != m_throwed_object_list.end(); i++)
+	for (unsigned int i = 0; i < m_throwed_object_list.size(); i++)
     {		
-		m_renderer.delObject(*i);
+		m_renderer.delObject(m_throwed_object_list[i]);
     }
 	
 	  m_throwed_rigid_list.clear();
 	  m_throwed_object_list.clear();	
 
-	  cout<<"objects " << m_throwed_object_list.size()<<endl;
-	  cout<<"rigid " << m_throwed_rigid_list.size()<<endl;
+	  //cout<<"objects " << m_throwed_object_list.size()<<endl;
+	  //cout<<"rigid " << m_throwed_rigid_list.size()<<endl;
+
+
+	}
 }
 
 void DualTouch::reset()
@@ -278,7 +318,7 @@ void DualTouch::idle()
 	m_hds.feedback(*m_physic.m_dynamicsWorld);	
 
 	if(m_hds.isReadyLaunch()){
-		throwObject();
+		throwMultiObject(ThronNumber);
 		m_hds.setWaitLunch();
 	}
 }
@@ -334,7 +374,7 @@ void DualTouch::keyboard1(unsigned char key, int x, int y)
 {
 	//m_camera1.m_key = key;
 	switch(key){
-		case('t'):throwObject();
+	case('t'):throwMultiObject(ThronNumber);
 				break;
 		case('r'):deleteThrowedObjects();
 				break;

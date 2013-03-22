@@ -10,6 +10,7 @@ const btScalar BALL_MASS = 0.2;
 const btScalar Effector_Mass = 4;
 const btScalar Effector_Size = 0.08f;
 const btScalar PI = 3.1415926535897932384626433832795;
+const btScalar ThronNumber = 4;
 
 using namespace std;
 
@@ -50,11 +51,14 @@ public:
 	btVector3 getFinalPos(btTransform* target, btScalar init_vx);
 	btScalar setVelocityTarget(btScalar time,btRigidBody* target,btScalar x);
 	void throwObject();	
+	void throwMultiObject(btScalar Onumber);
 	void deleteThrowedObjects();
 	//callbacks
 	static void newConstraint(void * ptr,btRigidBody * body,unsigned int id);
 	static void deleteConstraint(void * ptr,btRigidBody * body,unsigned int id);
 	static void tickCallback(btDynamicsWorld *world, btScalar timeStep);
+
+	void setTheTargetFinalPos(btRigidBody* target,btScalar initial_x);
 
 	void init2();
 

@@ -54,7 +54,7 @@ void Physic::init()
 //	clientResetScene();
 }
 
-void Physic::delthrown(vector<btRigidBody*> thrown,vector<Object*> thrown_object){
+void Physic::delthrown(vector<btRigidBody*> thrown){
 	// remove thrown rigid bodies
 	for (vector<btRigidBody*>::iterator i = thrown.begin(); i != thrown.end(); i++)
     {
@@ -66,12 +66,7 @@ void Physic::delthrown(vector<btRigidBody*> thrown,vector<Object*> thrown_object
 		m_dynamicsWorld->removeRigidBody(body);
 		delete body;
 	}	
-
-	for (vector<Object*>::iterator i =thrown_object.begin(); i != thrown_object.end(); i++)
-    {		
-		btCollisionShape* shape = (*i)->getshape();		
-		delete shape;
-    }
+	
 }
 
 void Physic::deleteRigidBody(btRigidBody* body){
