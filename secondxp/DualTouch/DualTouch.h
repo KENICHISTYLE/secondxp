@@ -10,7 +10,7 @@ const btScalar BALL_MASS = 0.2;
 const btScalar Effector_Mass = 4;
 const btScalar Effector_Size = 0.08f;
 const btScalar PI = 3.1415926535897932384626433832795;
-const btScalar ThronNumber = 4;
+const btScalar ThronNumber = 2;
 
 using namespace std;
 
@@ -47,7 +47,11 @@ public:
 	void createCursor(unsigned int deviceId);
 	void addLauncher();
 	void rotateCanon(btVector3* rotate);
+	void moveCanonLeft(btScalar x);
+	void moveCanonRight(btScalar x);
+	void teleportX(btScalar x);
 
+	btVector3 getFinalPos(btTransform* target, btScalar init_vx,btScalar x_dec);
 	btVector3 getFinalPos(btTransform* target, btScalar init_vx);
 	btScalar setVelocityTarget(btScalar time,btRigidBody* target,btScalar x);
 	void throwObject();	
@@ -72,11 +76,15 @@ public:
 
 	btRigidBody * cursors[NB_DEVICES_MAX];
 	btVector3 m_cursorColors[NB_DEVICES_MAX];
-
-	vector <btRigidBody *> m_throwed_rigid_list;
+		
+	vector <btScalar> m_throwed_xv;
+	vector <float> m_throwed_x;
 	vector <Object *> m_throwed_object_list;
+	vector <btRigidBody *> m_throwed_rigid_list;
+	vector <btTransform*> m_throwed_transform;
+	
 
-	btRigidBody* m_curentThrowed;
+	btRigidBody* m_curentThrowed;	
 	Object* m_curentObject;
 	btScalar m_velocityY;
 	btScalar m_velocityZ;
@@ -89,4 +97,6 @@ public:
 	btScalar m_impactY;
 	btVector3 m_impactPos;
 	btRigidBody* m_canon;
+
+	
 };

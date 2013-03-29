@@ -7,6 +7,7 @@
 #include <vector>
 #include "Object.h"
 #include <HDU/hduError.h>
+#include <limits>
 
 #pragma comment (lib,"hd.lib")
 #pragma comment (lib,"hdu.lib")
@@ -30,6 +31,8 @@
 const btVector3 green(0.0f,1.0f,0.0f);
 const btVector3 orange(0.77f,0.55f,0.44f);
 const btVector3 blue(0.0f,0.33f,0.66f);
+const btVector3 dark_Grey(0.2f,0.2f,0.2f);
+const btScalar Time = 30 ;
 
 class HapticData
 {
@@ -53,7 +56,6 @@ class HapticData
 	int m_nbCollision;
 	btVector3* m_near;	
 	btRigidBody * m_currentThrown;	
-	btScalar setNear();	
 	int m_smother;
 	bool m_done;
 	bool m_continusFeadBack;
@@ -72,6 +74,7 @@ class HapticSynchronizer
 	void setThrown(btRigidBody * thrown);
 	void setImpactPos(btVector3* m_impactPos);	
 	void setNear(btVector3* pos);
+	void setFeadBack();
 	HapticData * m_data;
 	HapticData m_free;	
 	btTransform m_effectors;
@@ -101,26 +104,35 @@ public:
 
 	btTransform m_effectors[NB_DEVICES_MAX];
 	static btTransform transform(HapticSynchronizer* hdd,HapticData* data);
-	static hduVector3Dd invertTransform(btVector3* trans,HapticSynchronizer* hs);
+	static hduVector3Dd invertTransform(btVector3* trans,btTransform* invertCamera);
 	static hduVector3Dd ComputeForce(hduVector3Dd* effector, hduVector3Dd* target, hduVector3Dd* velocity);
 	static hduVector3Dd ForecToImpact(hduVector3Dd* effector,hduVector3Dd* impactpos);
 	btVector3 getEffectorPosition();
 
+	HDdouble betweenTwoPoints(hduVector3Dd point1, hduVector3Dd point2);
 	void(*m_newConstraint)(void * ptr,btRigidBody *,unsigned int );
 	void(*m_deleteConstraint)(void * ptr,btRigidBody *,unsigned int );
 
 	void * m_ptr;
 
-	void setDThrownList(std::vector <btRigidBody *> thrown);
+	void setDThrownList(std::vector <btRigidBody *>* thrown);
 	void setThrown(btRigidBody * thrown);
-	void setDThrownObject(std::vector <Object *> thrown_object);
+	void setDThrownObject(std::vector <Object *>* thrown_object);
 	void setDThrownObject(Object * thrown);
 	void setImpactPos(btVector3* pos);
 	hduVector3Dd trajectoryLine(hduVector3Dd point1,hduVector3Dd point2);
 	HDdouble distanceToPath(hduVector3Dd path,hduVector3Dd point);
 
+	void showTarget(unsigned int pos);
+	void showTarget(btRigidBody * target);
 	bool isReadyLaunch();
 	void setWaitLunch();
+	bool isTargetChosen();
+	void waitTargetChoice();
+	btRigidBody* getTarget();
+	void activateMove();
+	void deactivateMove();
+	void resetThrow();
 
 	static void truncate(HDdouble* x,HDdouble* y,HDdouble* z);
 	static bool inrange(HDdouble x,HDdouble y,HDdouble z);
@@ -139,10 +151,14 @@ private:
 	btVector3* m_impactPos;
 	btScalar m_variator; 
 	Object* m_ThrownObject;
-	std::vector <Object *> m_thrownObjects;
-	std::vector <btRigidBody *> m_thrown;
+	btRigidBody* m_Thrown;
+	std::vector <Object *>* m_thrownObjects;
+	std::vector <btRigidBody *>* m_thrownRigids;
 	bool m_canLaunch;
+	bool m_posSet;
+	bool m_targetChoosen;
 	btRigidBody* m_ground;
+	btScalar m_time;
 };
 
 

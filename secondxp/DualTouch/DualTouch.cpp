@@ -13,8 +13,8 @@ DualTouch::~DualTouch(void)
 
 void DualTouch::init1()
 {
-	m_velocityY = 25.0f;
-	m_velocityZ = 2.0f;
+	m_velocityY = 12.0f;
+	m_velocityZ = 2.5f;
 	m_impactY = -2;
 	m_moveTarget = false;
 	m_timeSpeed = 0.02;
@@ -57,17 +57,17 @@ void DualTouch::createScene()
 	//ground
 	const btScalar halfSize = 0.5f;
 	btTransform * t = new btTransform(btQuaternion(),btVector3(0,0,-halfSize*2)); 
-	btCollisionShape * shape = new btBoxShape (btVector3(30,halfSize*2,40));
+	btCollisionShape * shape = new btBoxShape (btVector3(100,halfSize*2,50));
 	
-	btRigidBody * body = m_physic.addRigidBody(5,t,shape);
+	btRigidBody * body = m_physic.addRigidBody(0,t,shape);
 	m_hds.setGround(body);
 	//body->setHitFraction(0);
 	//body->setRestitution(0);
 	//body->setFriction(0);
 	//body->setRollingFriction(0);
-	body->setCollisionFlags( body->getCollisionFlags() | 
-		btCollisionObject::CF_KINEMATIC_OBJECT); 
-	body->setActivationState(DISABLE_DEACTIVATION); 
+	//body->setCollisionFlags( body->getCollisionFlags() | 
+	//	btCollisionObject::CF_KINEMATIC_OBJECT); 
+	//body->setActivationState(DISABLE_DEACTIVATION); 
 	m_renderer.addObject(new Object(shape,t,neutral));
 
 	addLauncher();
@@ -81,7 +81,7 @@ void DualTouch::addLauncher(){
 	btScalar hz = 0.3;
 	btTransform * t = new btTransform(btQuaternion(),btVector3(0,m_lunch_y,hy+0.2)); 
 
-	btCollisionShape * shape = new btBoxShape (btVector3(hx+hx,hy,hz));
+	btCollisionShape * shape = new btBoxShape (btVector3(hx+hx,hy,40));
 	
 	btRigidBody * body = m_physic.addRigidBody(20,t,shape);
 	m_renderer.addObject(new Object(shape,t,orange));
@@ -96,8 +96,33 @@ void DualTouch::addLauncher(){
 	m_canon->setCollisionFlags( m_canon->getCollisionFlags() | 
 	btCollisionObject::CF_KINEMATIC_OBJECT); 
 	m_canon->setActivationState(DISABLE_DEACTIVATION);
-	m_renderer.addObject(new Object(shape,t,orange));
+	m_renderer.addObject(new Object(shape,t,dark_Grey));
 }
+
+void DualTouch::moveCanonLeft(btScalar x){
+	btTransform trans;	
+	m_canon->getMotionState()->getWorldTransform(trans);
+	btVector3 t = trans.getOrigin();
+	trans.setOrigin(btVector3(t.x()-x,t.y(),t.z()));
+	m_canon->getMotionState()->setWorldTransform(trans);
+}
+
+void DualTouch::moveCanonRight(btScalar x){
+	btTransform trans;	
+	m_canon->getMotionState()->getWorldTransform(trans);
+	btVector3 t = trans.getOrigin();
+	trans.setOrigin(btVector3(t.x()+x,t.y(),t.z()));
+	m_canon->getMotionState()->setWorldTransform(trans);
+}
+
+void DualTouch::teleportX(btScalar x){
+	btTransform trans;	
+	m_canon->getMotionState()->getWorldTransform(trans);
+	btVector3 t = trans.getOrigin();
+	trans.setOrigin(btVector3(x,t.y(),t.z()));
+	m_canon->getMotionState()->setWorldTransform(trans);
+}
+
 
 void DualTouch::rotateCanon(btVector3* rotate){
 	btTransform myTrans = btTransform();
@@ -178,60 +203,96 @@ void DualTouch::throwObject(){
 }
 
 void DualTouch::throwMultiObject(btScalar Onumber){
-	    float hx = 0.3f;
-		float hy = 0.3f;
-		float hz = 0.3f;
+	    float hx = 0.17f;
+		float dec = 0.5f;
+		float canonPos = (rand() % 8)-4;
+
 		const btScalar halfSize = 0.5f;
-		int r = 6;
+		int r = Onumber;
 		
 		deleteThrowedObjects();	
 
-		btVector3 targetpos = btVector3(0,15,m_lunch_z);
-		btTransform * t ; 		
-		
+		btVector3 targetpos1 = btVector3(canonPos+dec,m_lunch_y,m_lunch_z);
+		btVector3 targetpos2 = btVector3(canonPos-dec,m_lunch_y,m_lunch_z);
+
+		btTransform* t ; 		
 		btCollisionShape * shape ;	
 
 		btRigidBody* body;
+		Object* obj;
 
 		m_impactY = m_hds.getEffectorPosition().y();		
 		
-		for(btScalar i = 0;i<Onumber;i++)
-		{	
-		  int f = rand() % r;
-		  int initial_x = f-r/2;
-		  shape = new btSphereShape (hx);
-		  t = new btTransform(btQuaternion(),targetpos); 
+		for(unsigned int i = 0;i<Onumber;i++)
+		{			  
+		  int f = (rand() % r) + 0.5;
+		  int initial_x;
+		  if (i % 2 == 0){
+			initial_x = f;
+			t = new btTransform(btQuaternion(),targetpos1); 
+			m_throwed_x.push_back(dec);
+		  }else{
+			initial_x= -f;
+			t = new btTransform(btQuaternion(),targetpos2);
+			m_throwed_x.push_back(-dec);
+		  }
+
+		  shape = new btSphereShape (hx);		  
 		  body = m_physic.addRigidBody(BALL_MASS,t,shape);
+		  obj = new Object(shape,t,blue);
 		  btScalar alpha = setVelocityTarget(m_timeSpeed,body,initial_x); 
+		  m_renderer.addObject(obj);		 
 		  m_throwed_rigid_list.push_back(body);
-		  m_throwed_object_list.push_back(m_renderer.addObject(new Object(shape,t,blue)));
+		  m_throwed_object_list.push_back(obj);
+		  m_throwed_transform.push_back(new btTransform(*t));
+		  m_throwed_xv.push_back(initial_x);
 		}
-		  	
-		m_hds.setDThrownList(m_throwed_rigid_list);			
-		m_hds.setDThrownObject(m_throwed_object_list);	
+		
+		// a verifier
+		teleportX(canonPos);
+		m_hds.setDThrownList(&m_throwed_rigid_list);		
+		m_hds.setDThrownObject(&m_throwed_object_list);	
+		m_hds.waitTargetChoice();
+		m_hds.deactivateMove();
 			
 }
 
 void DualTouch::setTheTargetFinalPos(btRigidBody* target,btScalar initial_x){
 
-		btVector3 final = getFinalPos(&target->getWorldTransform(),initial_x);
-		m_hds.setImpactPos(&final);
+		//btVector3 final = getFinalPos(&target->getWorldTransform(),initial_x);
+		//m_hds.setImpactPos(&final);
 }
 		
 
-btVector3 DualTouch::getFinalPos(btTransform* target, btScalar vx){
+btVector3 DualTouch::getFinalPos(btTransform* target, btScalar vx,  btScalar x_dec){
 	btScalar time = 0;	
 	btVector3 gravity = m_physic.m_dynamicsWorld->getGravity();
 	btScalar y = m_lunch_y;
 	btScalar z = 0;
 	btScalar x = 0;
-	while(y>=m_impactY){
+	while(y>m_impactY){
 		y = m_velocityY * cos(m_theta) * time;
 		y = m_lunch_y - y;
 		z = (gravity.z()/2 * pow(time,2)) +( m_velocityZ * sin(m_theta)*time) +  m_lunch_z;		
 		time += m_timeSpeed; 
 	}
-	x =vx*time;
+	x =vx*(time-m_timeSpeed)+x_dec;
+	return btVector3(x,y,z);
+}
+
+btVector3 DualTouch::getFinalPos(btTransform* target, btScalar vx){
+btScalar time = 0;	
+	btVector3 gravity = m_physic.m_dynamicsWorld->getGravity();
+	btScalar y = m_lunch_y;
+	btScalar z = 0;
+	btScalar x = 0;
+	while(y>m_impactY){
+		y = m_velocityY * cos(m_theta) * time;
+		y = m_lunch_y - y;
+		z = (gravity.z()/2 * pow(time,2)) +( m_velocityZ * sin(m_theta)*time) +  m_lunch_z;		
+		time += m_timeSpeed; 
+	}
+	x =vx*(time-m_timeSpeed);
 	return btVector3(x,y,z);
 }
 
@@ -252,18 +313,24 @@ void DualTouch::deleteThrowedObjects(){
 
 	if(m_throwed_rigid_list.size() > 0){
 	 // clear rigd bodies		
-	m_physic.delthrown(m_throwed_rigid_list);	 
+	m_physic.delthrown(&m_throwed_rigid_list);	 
 			
 	
     // clear graphics
 	for (unsigned int i = 0; i < m_throwed_object_list.size(); i++)
     {		
 		m_renderer.delObject(m_throwed_object_list[i]);
+
+		delete m_throwed_transform[i];		
     }
 	
 	  m_throwed_rigid_list.clear();
 	  m_throwed_object_list.clear();	
+	  m_throwed_transform.clear();
+	  m_throwed_xv.clear();
+	  m_throwed_x.clear();
 
+	  //m_hds.resetThrow();
 	  //cout<<"objects " << m_throwed_object_list.size()<<endl;
 	  //cout<<"rigid " << m_throwed_rigid_list.size()<<endl;
 
@@ -316,10 +383,23 @@ void DualTouch::idle()
 	m_physic.run();
 	m_physic.tick();
 	m_hds.feedback(*m_physic.m_dynamicsWorld);	
-
+	
 	if(m_hds.isReadyLaunch()){
 		throwMultiObject(ThronNumber);
 		m_hds.setWaitLunch();
+	}
+
+	if(m_hds.isTargetChosen()){
+		for(unsigned int i = 0; i<m_throwed_rigid_list.size(); i++){
+			btRigidBody* t= m_hds.getTarget();
+			if(m_throwed_rigid_list[i] == t){
+				btVector3 final = getFinalPos(m_throwed_transform[i],m_throwed_xv[i],m_throwed_x[i]);
+				m_hds.setImpactPos(&final);	
+				//m_hds.waitTargetChoice();
+				m_hds.activateMove();
+			}
+		}
+
 	}
 }
 
@@ -379,13 +459,13 @@ void DualTouch::keyboard1(unsigned char key, int x, int y)
 		case('r'):deleteThrowedObjects();
 				break;
 		case('+'):
-		case('p'): m_velocityY += 0.3f;
-				   m_velocityZ -= 0.03f;
+		case('p'): m_velocityY += 0.01f;
+				   m_velocityZ -= 0.0001f;
 				   cout<<" velocity Y "<<m_velocityY<<endl;
 				break;
 		case('-'):
-		case('o'): m_velocityY -= 0.3f;
-				   m_velocityZ += 0.03f;
+		case('o'): m_velocityY -= 0.01f;
+				   m_velocityZ += 0.0001f;
 				   cout<<" velocity Y "<<m_velocityY<<endl;
 				break;
 		default:
