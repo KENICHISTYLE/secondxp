@@ -10,7 +10,7 @@ const btScalar BALL_MASS = 0.2;
 const btScalar Effector_Mass = 4;
 const btScalar Effector_Size = 0.08f;
 const btScalar PI = 3.1415926535897932384626433832795;
-const btScalar ThronNumber = 2;
+const int canonNbr = 4;
 
 using namespace std;
 
@@ -49,13 +49,16 @@ public:
 	void rotateCanon(btVector3* rotate);
 	void moveCanonLeft(btScalar x);
 	void moveCanonRight(btScalar x);
-	void teleportX(btScalar x);
+	void teleportX(Object* canon,btScalar x);
 
-	btVector3 getFinalPos(btTransform* target, btScalar init_vx,btScalar x_dec);
+	btVector3 getFinalPos(btTransform* target,int targetIndex, btScalar init_vx,btScalar x_dec);
 	btVector3 getFinalPos(btTransform* target, btScalar init_vx);
 	btScalar setVelocityTarget(btScalar time,btRigidBody* target,btScalar x);
 	void throwObject();	
 	void throwMultiObject(btScalar Onumber);
+	void throwMultiObject(btScalar Onumber, float canonpos, int index);
+	void setHapticParam();
+	void waitFeadBack();
 	void deleteThrowedObjects();
 	//callbacks
 	static void newConstraint(void * ptr,btRigidBody * body,unsigned int id);
@@ -81,8 +84,9 @@ public:
 	vector <float> m_throwed_x;
 	vector <Object *> m_throwed_object_list;
 	vector <btRigidBody *> m_throwed_rigid_list;
-	vector <btTransform*> m_throwed_transform;
-	
+	vector <btTransform*> m_throwed_transform;	
+	vector <btVector3*> m_trajectory[ThronNumber];
+	btVector3 m_impactPossible[ThronNumber];
 
 	btRigidBody* m_curentThrowed;	
 	Object* m_curentObject;
@@ -94,9 +98,8 @@ public:
 	btScalar m_lunch_z;
 	btScalar m_lunch_y;
 	btScalar m_timeSpeed;
-	btScalar m_impactY;
-	btVector3 m_impactPos;
-	btRigidBody* m_canon;
-
-	
+	btScalar m_impactY;	
+	Object* m_canons[canonNbr];
+	btCollisionShape* m_canonShape;	
+	int m_CanonPos[canonNbr];	
 };

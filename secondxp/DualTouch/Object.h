@@ -15,4 +15,6 @@ public:
 	btVector3 getpos();
 	btCollisionShape * getshape();
 	void setColor(const btVector3 &color);	
+	void setTransform(const btTransform &newtrans);
+	btTransform* getTransform();
 };

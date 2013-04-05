@@ -34,6 +34,7 @@ const btVector3 blue(0.0f,0.33f,0.66f);
 const btVector3 dark_Grey(0.2f,0.2f,0.2f);
 const btScalar Time = 30 ;
 
+const HDdouble Distance_max = 1.0;
 class HapticData
 {
 	public:
@@ -120,6 +121,8 @@ public:
 	void setDThrownObject(std::vector <Object *>* thrown_object);
 	void setDThrownObject(Object * thrown);
 	void setImpactPos(btVector3* pos);
+	void setPossibleImpactPoints(btVector3* impact);
+	void clearPossibleImpactPoints();
 	hduVector3Dd trajectoryLine(hduVector3Dd point1,hduVector3Dd point2);
 	HDdouble distanceToPath(hduVector3Dd path,hduVector3Dd point);
 
@@ -149,9 +152,11 @@ private:
 	btTransform  * m_cameraViews[NB_DEVICES_MAX];
 	HDint m_oldButtons[NB_DEVICES_MAX];	
 	btVector3* m_impactPos;
+	std::vector <btVector3*> m_possibleImpact;
 	btScalar m_variator; 
 	Object* m_ThrownObject;
 	btRigidBody* m_Thrown;
+	btRigidBody* m_caught;
 	std::vector <Object *>* m_thrownObjects;
 	std::vector <btRigidBody *>* m_thrownRigids;
 	bool m_canLaunch;

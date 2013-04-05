@@ -10,6 +10,8 @@
 
 #define FLT_2_PI 6.283185307f
 
+const int ThronNumber = 3;
+
 class Renderer
 {
 	struct ShapeCache
@@ -29,7 +31,7 @@ public:
 	void init();
 
 	void drawSky();
-
+	void renderTrajectory();
 	void drawBox(const btVector3 &halfSize);
 	void drawCone(const btScalar & radius , const btScalar & height);
 	void drawSphere(const btScalar & radius);
@@ -42,6 +44,8 @@ public:
 	void replaceObject(Object* oldObject, Object* newObject);
 	Object * getObject(btCollisionShape * shape);
 
+	void setPoints(std::vector<btVector3*>* points, int index);
+	void clearPoints();
 private:
 
 	//GL_ShapeDrawer m_shapedrawer; 
@@ -50,10 +54,12 @@ private:
 
 	unsigned int m_texturehandle;
 	std::vector<Object *> m_objects;
+	std::vector <btVector3*>* m_points[ThronNumber];
 	GLfloat m_lightPos[3];
 	GLfloat m_wireColor[3];
 	GLfloat m_clearColor[3];
 	GLfloat m_matDiffuse[4];
 	GLfloat m_matAmbient[4];
 	bool m_oultines;
+
 };

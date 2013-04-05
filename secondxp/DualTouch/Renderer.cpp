@@ -47,6 +47,8 @@ Renderer::Renderer(void)
 	m_wireColor[1]=0.2f;
 	m_wireColor[2]=0.2f;
 
+	for(int i = 0; i < ThronNumber;i++)
+		m_points[i] = NULL;
 	m_oultines =true;
 	m_shapecaches.clear();
 }
@@ -115,7 +117,7 @@ void Renderer::init()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	
+
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_MULTISAMPLE);
 
@@ -207,12 +209,15 @@ void Renderer::display()
 
 	drawSky();
 
+	// show trajectory if object thrown
+	renderTrajectory();
+
 	glLightfv(GL_LIGHT0, GL_POSITION, m_lightPos);
 
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
 	renderScene();
-
+	
 	//computing shadows mask
 	glDisable(GL_LIGHTING);
 	glDepthMask(GL_FALSE);
@@ -671,4 +676,28 @@ void Renderer::drawSky()
 	glColor3f(m_clearColor[0],m_clearColor[1],m_clearColor[2]);
 	glDisable(GL_LIGHTING);
 	glutSolidCube(1000);
+}
+
+void Renderer::renderTrajectory(){
+	glColor3f(0.6,0.0,0.0);		
+	glBegin(GL_POINTS);	
+	for (int j = 0; j < ThronNumber;j++)			
+		if(m_points[j] != NULL && (m_points[j])->size()>0){			
+			for(int i =0 ;i< (m_points[j]->size());i++){		
+				glVertex3f(
+					(*m_points[j])[i]->getX(), 
+					(*m_points[j])[i]->getY(),
+					(*m_points[j])[i]->getZ());					
+			}			
+	}
+	glEnd();
+}
+
+void Renderer::setPoints(std::vector<btVector3*>* points, int index){
+	m_points[index] = points;
+}
+
+void Renderer::clearPoints(){
+	for(int i =0 ; i < ThronNumber;i++)
+		m_points[i] = NULL;
 }

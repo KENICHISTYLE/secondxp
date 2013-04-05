@@ -7,20 +7,22 @@ DualTouch::DualTouch(void)
 }
 
 DualTouch::~DualTouch(void)
-{
+{ 
+	delete m_canonShape;	
 	m_physic.exit();
 }
 
 void DualTouch::init1()
 {
-	m_velocityY = 12.0f;
+	m_velocityY = 20.0f;
 	m_velocityZ = 2.5f;
 	m_impactY = -2;
 	m_moveTarget = false;
-	m_timeSpeed = 0.02;
+	m_timeSpeed = 0.03;
 	m_theta = 45;
 	m_lunch_z = 3.5;
-	m_lunch_y = 15;
+	m_lunch_y = 30;
+	//m_leftToTrhow = ThronNumber;
 	m_renderer.init();
 	m_physic.init();
 	
@@ -89,49 +91,49 @@ void DualTouch::addLauncher(){
 	body->setCollisionFlags( body->getCollisionFlags() | 
 	btCollisionObject::CF_KINEMATIC_OBJECT); 
 	body->setActivationState(DISABLE_DEACTIVATION);
-
-	t = new btTransform(btQuaternion(btVector3(1,0,0),-0.55),btVector3(0,m_lunch_y+hy,hy+1.5));
-	shape = new btCylinderShape(btVector3(hx,hy*2,hz));
-	m_canon = m_physic.addRigidBody(10,t,shape);
-	m_canon->setCollisionFlags( m_canon->getCollisionFlags() | 
-	btCollisionObject::CF_KINEMATIC_OBJECT); 
-	m_canon->setActivationState(DISABLE_DEACTIVATION);
-	m_renderer.addObject(new Object(shape,t,dark_Grey));
+	
+	m_canonShape = new btCylinderShape(btVector3(hx,hy*2,hz));	
+	for(int i = 0; i <canonNbr; i++){
+		m_CanonPos[i] = ((i+1)-canonNbr/2)*3;
+		t = new btTransform(btQuaternion(btVector3(1,0,0),-0.55),btVector3(m_CanonPos[i],m_lunch_y+hy,hy+1.5));
+		m_canons[i] = m_renderer.addObject(new Object(m_canonShape,t,dark_Grey));			
+	}
 }
+
 
 void DualTouch::moveCanonLeft(btScalar x){
 	btTransform trans;	
-	m_canon->getMotionState()->getWorldTransform(trans);
+	//m_canon->getMotionState()->getWorldTransform(trans);
 	btVector3 t = trans.getOrigin();
 	trans.setOrigin(btVector3(t.x()-x,t.y(),t.z()));
-	m_canon->getMotionState()->setWorldTransform(trans);
+	//m_canon->getMotionState()->setWorldTransform(trans);
 }
 
 void DualTouch::moveCanonRight(btScalar x){
 	btTransform trans;	
-	m_canon->getMotionState()->getWorldTransform(trans);
+	//m_canon->getMotionState()->getWorldTransform(trans);
 	btVector3 t = trans.getOrigin();
 	trans.setOrigin(btVector3(t.x()+x,t.y(),t.z()));
-	m_canon->getMotionState()->setWorldTransform(trans);
+	//m_canon->getMotionState()->setWorldTransform(trans);
 }
 
-void DualTouch::teleportX(btScalar x){
-	btTransform trans;	
-	m_canon->getMotionState()->getWorldTransform(trans);
+void DualTouch::teleportX(Object* canon,btScalar x){
+	btTransform trans;		
+	trans = *(canon->getTransform());
 	btVector3 t = trans.getOrigin();
-	trans.setOrigin(btVector3(x,t.y(),t.z()));
-	m_canon->getMotionState()->setWorldTransform(trans);
+	trans.setOrigin(btVector3(x,t.y(),t.z()));	
+	canon->setTransform(trans);
 }
 
 
 void DualTouch::rotateCanon(btVector3* rotate){
 	btTransform myTrans = btTransform();
-	m_canon->getMotionState()->getWorldTransform(myTrans);
+//	m_canon->getMotionState()->getWorldTransform(myTrans);
 	btQuaternion rot = myTrans.getRotation();
 	btScalar alpha = asin(rotate->x()/rotate->z())*(PI/180);
-	rot.setX(rotate->x());
+//	rot.setX(rotate->x());
 	myTrans.setRotation(rot);
-	m_canon->getMotionState()->setWorldTransform(myTrans);
+//	m_canon->getMotionState()->setWorldTransform(myTrans);
 }
 
 void DualTouch::createCursor(unsigned int deviceId)
@@ -249,7 +251,7 @@ void DualTouch::throwMultiObject(btScalar Onumber){
 		}
 		
 		// a verifier
-		teleportX(canonPos);
+//		teleportX(canonPos);
 		m_hds.setDThrownList(&m_throwed_rigid_list);		
 		m_hds.setDThrownObject(&m_throwed_object_list);	
 		m_hds.waitTargetChoice();
@@ -257,27 +259,89 @@ void DualTouch::throwMultiObject(btScalar Onumber){
 			
 }
 
+void DualTouch::throwMultiObject(btScalar Onumber, float canonPos, int index){
+	    float hx = 0.17f;
+		float dec = 0.0f;		
+
+		int r = Onumber;		
+
+		btVector3 targetpos1 = btVector3(canonPos+dec,m_lunch_y,m_lunch_z);
+		btVector3 targetpos2 = btVector3(canonPos-dec,m_lunch_y,m_lunch_z);
+
+		btTransform* t ; 		
+		btCollisionShape * shape ;	
+
+		btRigidBody* body;
+		Object* obj;
+
+		m_impactY = m_hds.getEffectorPosition().y() ;		
+		
+		for(unsigned int i = 0;i<Onumber;i++)
+		{			  
+		  int f = (rand() % 1) + 0.5;
+		  int initial_x;
+		  if (index % 2 == 0){
+			initial_x = f;
+			t = new btTransform(btQuaternion(),targetpos1); 
+			m_throwed_x.push_back(canonPos+dec);
+		  }else{
+			initial_x= -f;
+			t = new btTransform(btQuaternion(),targetpos2);
+			m_throwed_x.push_back(canonPos-dec);
+		  }
+
+		  shape = new btSphereShape (hx);		  
+		  body = m_physic.addRigidBody(BALL_MASS,t,shape);
+		  obj = new Object(shape,t,blue);
+		  btScalar alpha = setVelocityTarget(m_timeSpeed,body,initial_x); 
+		  m_renderer.addObject(obj);		 
+		  m_throwed_rigid_list.push_back(body);
+		  m_throwed_object_list.push_back(obj);
+		  m_throwed_transform.push_back(new btTransform(*t));
+		  m_throwed_xv.push_back(initial_x);		  
+		  getFinalPos(m_throwed_transform[index],index,initial_x,canonPos);
+		}		
+		// a verifier	
+			
+}
+
+void DualTouch::setHapticParam(){
+	m_hds.setDThrownList(&m_throwed_rigid_list);		
+	m_hds.setDThrownObject(&m_throwed_object_list);	
+	//m_hds.setPossibleImpactPoints(m_impactPossible);
+	m_hds.waitTargetChoice();
+	m_hds.deactivateMove();
+}
+
+
 void DualTouch::setTheTargetFinalPos(btRigidBody* target,btScalar initial_x){
 
 		//btVector3 final = getFinalPos(&target->getWorldTransform(),initial_x);
 		//m_hds.setImpactPos(&final);
-}
-		
+}		
 
-btVector3 DualTouch::getFinalPos(btTransform* target, btScalar vx,  btScalar x_dec){
+// calculate trajectory and save final pos
+btVector3 DualTouch::getFinalPos(btTransform* target,int targetIndex, btScalar vx,  btScalar x_dec){
 	btScalar time = 0;	
 	btVector3 gravity = m_physic.m_dynamicsWorld->getGravity();
 	btScalar y = m_lunch_y;
 	btScalar z = 0;
 	btScalar x = 0;
-	while(y>m_impactY){
+	
+	while(y>m_impactY - m_lunch_y){
 		y = m_velocityY * cos(m_theta) * time;
 		y = m_lunch_y - y;
-		z = (gravity.z()/2 * pow(time,2)) +( m_velocityZ * sin(m_theta)*time) +  m_lunch_z;		
+		z = (gravity.z()/2 * pow(time,2)) +( m_velocityZ * sin(m_theta)*time) +  m_lunch_z;
+		x =vx*(time-m_timeSpeed)+x_dec;
 		time += m_timeSpeed; 
+		m_trajectory[targetIndex].push_back(new btVector3(x,y,z));
+		if(y<m_impactY)
+			m_impactPossible[targetIndex] = btVector3(x,y,z);
 	}
-	x =vx*(time-m_timeSpeed)+x_dec;
-	return btVector3(x,y,z);
+			
+	m_renderer.setPoints(&(m_trajectory[targetIndex]), targetIndex);
+	
+	return m_impactPossible[targetIndex];
 }
 
 btVector3 DualTouch::getFinalPos(btTransform* target, btScalar vx){
@@ -323,6 +387,15 @@ void DualTouch::deleteThrowedObjects(){
 
 		delete m_throwed_transform[i];		
     }
+
+	// clear trajectory
+
+	for (unsigned int i = 0; i < ThronNumber; i++)
+	{
+		for(unsigned int j = 0; j < m_trajectory[i].size(); j++)
+			delete (m_trajectory[i])[j];
+		m_trajectory[i].clear();		
+	}
 	
 	  m_throwed_rigid_list.clear();
 	  m_throwed_object_list.clear();	
@@ -330,7 +403,9 @@ void DualTouch::deleteThrowedObjects(){
 	  m_throwed_xv.clear();
 	  m_throwed_x.clear();
 
-	  //m_hds.resetThrow();
+	 // m_hds.clearPossibleImpactPoints();
+	  m_renderer.clearPoints();
+	  m_hds.resetThrow();
 	  //cout<<"objects " << m_throwed_object_list.size()<<endl;
 	  //cout<<"rigid " << m_throwed_rigid_list.size()<<endl;
 
@@ -377,6 +452,42 @@ void DualTouch::display2()
 	m_physic.render();
 }
 
+void DualTouch::waitFeadBack(){	
+
+	if(m_hds.isReadyLaunch()){
+		deleteThrowedObjects();
+
+		for (int i=0; i<canonNbr; i++) { // shuffle
+			int r = i + (rand() % ( canonNbr - i)); 
+		    int temp = m_CanonPos[i];
+			m_CanonPos[i] = m_CanonPos[r];
+			m_CanonPos[r] = temp;
+        }
+
+		for(int i = 0; i< ThronNumber; i++){
+			throwMultiObject(1, m_CanonPos[i],i);
+		}
+			
+		setHapticParam();		
+		m_hds.setWaitLunch();
+		
+			
+	}
+	
+	if(m_hds.isTargetChosen()){
+		for(unsigned int i = 0; i<m_throwed_rigid_list.size(); i++){
+			btRigidBody* t= m_hds.getTarget();
+			if(m_throwed_rigid_list[i] == t){
+				//btVector3 final =  m_impactPossible[i]; 
+				//m_hds.setImpactPos(&final);	
+				//m_hds.waitTargetChoice();
+				//m_hds.activateMove();
+			}
+		}
+
+	}
+}
+
 void DualTouch::idle()
 {	
 	m_hds.run();	
@@ -384,23 +495,7 @@ void DualTouch::idle()
 	m_physic.tick();
 	m_hds.feedback(*m_physic.m_dynamicsWorld);	
 	
-	if(m_hds.isReadyLaunch()){
-		throwMultiObject(ThronNumber);
-		m_hds.setWaitLunch();
-	}
-
-	if(m_hds.isTargetChosen()){
-		for(unsigned int i = 0; i<m_throwed_rigid_list.size(); i++){
-			btRigidBody* t= m_hds.getTarget();
-			if(m_throwed_rigid_list[i] == t){
-				btVector3 final = getFinalPos(m_throwed_transform[i],m_throwed_xv[i],m_throwed_x[i]);
-				m_hds.setImpactPos(&final);	
-				//m_hds.waitTargetChoice();
-				m_hds.activateMove();
-			}
-		}
-
-	}
+	waitFeadBack();
 }
 
 void DualTouch::tickCallback(btDynamicsWorld *world, btScalar timeStep)
@@ -454,7 +549,7 @@ void DualTouch::keyboard1(unsigned char key, int x, int y)
 {
 	//m_camera1.m_key = key;
 	switch(key){
-	case('t'):throwMultiObject(ThronNumber);
+	case('t')://throwMultiObject(ThronNumber);
 				break;
 		case('r'):deleteThrowedObjects();
 				break;

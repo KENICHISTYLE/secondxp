@@ -32,3 +32,10 @@ btVector3 Object::getpos(){
 btCollisionShape* Object::getshape(){
 	return m_shape;
 }
+
+void Object::setTransform(const btTransform &newtrans){
+	*m_transform = newtrans;
+}
+btTransform* Object::getTransform(){
+	return m_transform;
+}
