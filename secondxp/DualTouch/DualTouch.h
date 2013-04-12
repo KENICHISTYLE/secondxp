@@ -5,19 +5,19 @@
 #include "Physic.h"
 #include "HapticDevice.h"
 #include <iostream>
+#include <sstream>
+#include "Logs.h"
 
-const btScalar BALL_MASS = 0.2;
-const btScalar Effector_Mass = 4;
+const btScalar BALL_MASS = 0.01;
+const btScalar Ball_Size = 0.3;
+const btScalar Effector_Mass = 2;
 const btScalar Effector_Size = 0.08f;
-const btScalar PI = 3.1415926535897932384626433832795;
+const btScalar m_timeSpeed = 0.01;
 const int canonNbr = 4;
+const float Gut_vz = 5.0f;
+const float Gut_vy = 11.0f;
 
 using namespace std;
-
-const btVector3 gray(0.6f,0.6f,0.6f);
-const btVector3 neutral(0.9f,0.9f,0.9f);
-const btVector3 red(1.0f,0.0f,0.0f);
-
 
 class DualTouch
 {
@@ -51,7 +51,7 @@ public:
 	void moveCanonRight(btScalar x);
 	void teleportX(Object* canon,btScalar x);
 
-	btVector3 getFinalPos(btTransform* target,int targetIndex, btScalar init_vx,btScalar x_dec);
+	void getFinalPos(btTransform* target,int targetIndex, btScalar init_vx,btScalar x_dec);
 	btVector3 getFinalPos(btTransform* target, btScalar init_vx);
 	btScalar setVelocityTarget(btScalar time,btRigidBody* target,btScalar x);
 	void throwObject();	
@@ -65,41 +65,46 @@ public:
 	static void deleteConstraint(void * ptr,btRigidBody * body,unsigned int id);
 	static void tickCallback(btDynamicsWorld *world, btScalar timeStep);
 
+	void evaluateScore();
 	void setTheTargetFinalPos(btRigidBody* target,btScalar initial_x);
 
 	void init2();
 
 	void reset();
-
+	
+	Logger m_log;
 	Physic m_physic;
 	Renderer m_renderer;
 	Camera m_camera1;
 	Camera m_camera2;
 	HapticDevice m_hds;
-
+	
 	btRigidBody * cursors[NB_DEVICES_MAX];
 	btVector3 m_cursorColors[NB_DEVICES_MAX];
-		
+	btVector3 m_impactPossible[ThronNumber];	
+
 	vector <btScalar> m_throwed_xv;
 	vector <float> m_throwed_x;
 	vector <Object *> m_throwed_object_list;
 	vector <btRigidBody *> m_throwed_rigid_list;
 	vector <btTransform*> m_throwed_transform;	
 	vector <btVector3*> m_trajectory[ThronNumber];
-	btVector3 m_impactPossible[ThronNumber];
+	bool m_goodToCatch[ThronNumber];
+	int m_score;
+	int m_lancerNbr;
+	int m_catchs;
 
 	btRigidBody* m_curentThrowed;	
 	Object* m_curentObject;
 	btScalar m_velocityY;
-	btScalar m_velocityZ;
-	btScalar m_time;
+	btScalar m_velocityZ;	
 	bool m_moveTarget;
 	btScalar m_theta;
 	btScalar m_lunch_z;
-	btScalar m_lunch_y;
-	btScalar m_timeSpeed;
+	btScalar m_lunch_y;	
 	btScalar m_impactY;	
 	Object* m_canons[canonNbr];
 	btCollisionShape* m_canonShape;	
 	int m_CanonPos[canonNbr];	
+	int m_time;
 };

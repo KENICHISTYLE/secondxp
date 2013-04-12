@@ -9,8 +9,7 @@
 #include "BulletCollision/CollisionShapes/btShapeHull.h"
 
 #define FLT_2_PI 6.283185307f
-
-const int ThronNumber = 3;
+const GLfloat black[3] = {0.1,0.1,0.1};
 
 class Renderer
 {
@@ -44,6 +43,8 @@ public:
 	void replaceObject(Object* oldObject, Object* newObject);
 	Object * getObject(btCollisionShape * shape);
 
+	void setText(std::string* text);
+	void WriteStatus(std::string* text);
 	void setPoints(std::vector<btVector3*>* points, int index);
 	void clearPoints();
 private:
@@ -52,14 +53,22 @@ private:
 	Renderer::ShapeCache* cache(btConvexShape* shape);
 	btAlignedObjectArray<ShapeCache*>	m_shapecaches;
 
+	void glWrite(GLfloat x,GLfloat y, void * font,std::string* text);
+	void drawPoint(GLfloat x, GLfloat y, GLfloat z);
+	void glEnter2D();
+	void glLeave2D();
+	void printText();
+	GLint glGetViewportWidth();
+	GLint glGetViewportHeight();
 	unsigned int m_texturehandle;
 	std::vector<Object *> m_objects;
-	std::vector <btVector3*>* m_points[ThronNumber];
+	std::vector <btVector3*> m_points[ThronNumber];
 	GLfloat m_lightPos[3];
 	GLfloat m_wireColor[3];
 	GLfloat m_clearColor[3];
 	GLfloat m_matDiffuse[4];
 	GLfloat m_matAmbient[4];
 	bool m_oultines;
+	std::string* m_text;
 
 };

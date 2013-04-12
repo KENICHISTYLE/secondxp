@@ -1,6 +1,4 @@
 #include "Physic.h"
-#include "BunnyMesh.h"
-
 
 
 Physic::Physic(void)
@@ -44,10 +42,11 @@ void Physic::init()
 	world->getSimulationIslandManager()->setSplitIslands(false);
 	world->getSolverInfo().m_numIterations = 16;
 	world->getSolverInfo().m_solverMode = SOLVER_SIMD+SOLVER_USE_WARMSTARTING;//+SOLVER_RANDMIZE_ORDER;
-
+	
 	m_dynamicsWorld->getDispatchInfo().m_enableSPU = true;
 	m_dynamicsWorld->setGravity(btVector3(0, 0,-2));
 	
+
 	m_previous = 0;
 	
 

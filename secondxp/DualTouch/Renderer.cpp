@@ -48,7 +48,8 @@ Renderer::Renderer(void)
 	m_wireColor[2]=0.2f;
 
 	for(int i = 0; i < ThronNumber;i++)
-		m_points[i] = NULL;
+		m_points[i].clear();
+	m_text = new std::string(" Hello ");
 	m_oultines =true;
 	m_shapecaches.clear();
 }
@@ -206,14 +207,14 @@ void Renderer::display()
 {
 	glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);  
 	glClearColor(m_clearColor[0],m_clearColor[1],m_clearColor[2],1.0f);
-
+	
 	drawSky();
 
 	// show trajectory if object thrown
 	renderTrajectory();
 
 	glLightfv(GL_LIGHT0, GL_POSITION, m_lightPos);
-
+	
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
 	renderScene();
@@ -232,7 +233,7 @@ void Renderer::display()
 	glStencilOp(GL_KEEP,GL_KEEP,GL_DECR);
 	renderShadows();
 	glFrontFace(GL_CCW);
-
+	
 	glPolygonMode(GL_FRONT,GL_FILL);
 	glPolygonMode(GL_BACK,GL_FILL);
 	glShadeModel(GL_SMOOTH);
@@ -244,7 +245,7 @@ void Renderer::display()
 	glFrontFace(GL_CCW);
 	glEnable(GL_CULL_FACE);
 	glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-
+	
 	glDepthFunc(GL_LEQUAL);
 	glStencilFunc( GL_NOTEQUAL, 0, 0xFFFFFFFFL );
 	glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
@@ -257,7 +258,7 @@ void Renderer::display()
 	glLoadIdentity();
 	glOrtho(0, 1, 1, 0, 0, 1);
 	glDisable(GL_DEPTH_TEST);
-
+	
 	glEnable(GL_BLEND);
 	glColor4f(0,0,0,0.5f);
 	glBegin(GL_QUADS);
@@ -267,16 +268,21 @@ void Renderer::display()
 		glVertex2i(1, 0);
 	glEnd();
 	glDisable(GL_BLEND);
-
+		
 	glEnable(GL_DEPTH_TEST);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-
+	glPopMatrix();	
+		
 	glEnable(GL_LIGHTING);
 	glDepthFunc(GL_LESS);
 	glDisable(GL_STENCIL_TEST);
 	glDisable(GL_CULL_FACE);
+		
+	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,black);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,black);
+	printText(); 
+	//glutSwapBuffers();
 }
 
 
@@ -406,10 +412,10 @@ void Renderer::renderScene()
 
 					glPopMatrix();
 					break;
-				}
+				}			
 			}
 		}
-	}
+	}	
 }
 
 void Renderer::renderShadows()
@@ -679,25 +685,104 @@ void Renderer::drawSky()
 }
 
 void Renderer::renderTrajectory(){
-	glColor3f(0.6,0.0,0.0);		
-	glBegin(GL_POINTS);	
+	glColor3f(0.0,0.8,0.0);
+
 	for (int j = 0; j < ThronNumber;j++)			
-		if(m_points[j] != NULL && (m_points[j])->size()>0){			
-			for(int i =0 ;i< (m_points[j]->size());i++){		
-				glVertex3f(
-					(*m_points[j])[i]->getX(), 
-					(*m_points[j])[i]->getY(),
-					(*m_points[j])[i]->getZ());					
+		if(m_points[j].size()>0){			
+			for(unsigned int i =0 ;i< (m_points[j].size());i++){				
+				drawPoint((m_points[j])[i]->getX(), 
+						  (m_points[j])[i]->getY(),
+						  (m_points[j])[i]->getZ());					
 			}			
 	}
+	
+}
+
+void Renderer::drawPoint(GLfloat x, GLfloat y, GLfloat z){	
+	GLfloat c = 0.04;
+	//glPointSize(0.001);
+
+	glBegin(GL_LINES);	
+	glVertex3f(x-c,y,z);
+	glVertex3f(x+c,y,z);
 	glEnd();
+
+	glBegin(GL_LINES);	
+	glVertex3f(x,y,z-c);
+	glVertex3f(x,y,z+c);
+	glEnd();
+
+	/*glBegin(GL_LINES);	
+	glVertex3f(x,y-c,z);
+	glVertex3f(x,y+c,z);
+	glEnd();*/
 }
 
 void Renderer::setPoints(std::vector<btVector3*>* points, int index){
-	m_points[index] = points;
+	for(unsigned int i = 0 ; i < points->size(); i++)
+		m_points[index].push_back((*points)[i]);
 }
 
 void Renderer::clearPoints(){
 	for(int i =0 ; i < ThronNumber;i++)
-		m_points[i] = NULL;
+		m_points[i].clear();
+}
+
+void Renderer::WriteStatus(std::string* text){	
+	glEnter2D();
+	glWrite(10, 20, GLUT_BITMAP_HELVETICA_12, text );
+	glLeave2D();
+}
+
+void Renderer::glEnter2D(){
+   glMatrixMode(GL_PROJECTION);
+   glPushMatrix();
+   glLoadIdentity();
+   gluOrtho2D(0, glGetViewportWidth(), 0, glGetViewportHeight());
+ 
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+   glLoadIdentity();
+ 
+   glDisable(GL_DEPTH_TEST);
+}
+ 
+void Renderer::glLeave2D(){
+   glMatrixMode(GL_PROJECTION);
+   glPopMatrix();
+   glMatrixMode(GL_MODELVIEW);
+   glPopMatrix();
+ 
+   glEnable(GL_DEPTH_TEST);
+}
+
+GLint Renderer::glGetViewportWidth()
+{
+   GLint w[4];
+   glGetIntegerv(GL_VIEWPORT, w);
+   return(w[2] - w[0]);
+}
+ 
+GLint Renderer::glGetViewportHeight()
+ {
+   GLint h[4];
+   glGetIntegerv(GL_VIEWPORT, h);
+   return(h[3] - h[1]);
+ }
+
+void Renderer::glWrite(GLfloat x,GLfloat y, void * font,std::string* text){ 
+		
+	glRasterPos2f(x, y);
+	for (int i= 0; i< text->size(); i ++)
+		glutBitmapCharacter(font, int((*text)[i]));
+}
+
+void Renderer::printText(){	
+	if(m_text != NULL)
+		WriteStatus(m_text);
+}
+
+void Renderer::setText(std::string* text){
+	delete m_text;
+	 m_text = text;
 }
