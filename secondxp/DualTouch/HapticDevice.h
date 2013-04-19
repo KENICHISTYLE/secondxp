@@ -14,7 +14,7 @@
 
 #pragma once
 
-#define STIFFNESS 0.30
+#define STIFFNESS 0.10
 #define EPSILON 0.00001 /* zero, for purposes of calculating distances. */
 #define SCALE_DEVICE_TO_WORLD 0.1f /* scaling distance */
 #define SCALE_WORLD_TO_DEVICE 1.0f/SCALE_DEVICE_TO_WORLD /* scaling distance */
@@ -26,19 +26,19 @@
 #define MNFORCE -MXFORCE
 #define MXDISTANCE 65
 #define MNDISTANCE -MXDISTANCE
-#define VARIATION_MAX 0.2
+#define VARIATION_MAX 0.25
 
 const btScalar Time = 100 ;
-const HDdouble Quick_Dicplacement = 16;
-const HDdouble Quick_Distance_max = 35.0;
+const HDdouble Quick_Dicplacement = 40;
+const HDdouble Distance_max = 8.0;
+const HDdouble Quick_Distance_max = 30.0;
 const HDdouble Slow_Distance_max = 20.0;
-
+const int Nbr_factor = 3;
 class HapticData
 {
 	public:
 	HapticData(HHD id){
-		m_id=id;m_ready=false;m_nbCollision=0;
-		m_near = new btVector3(MAXSCLAR,MAXSCLAR,MAXSCLAR);
+		m_id=id;m_ready=false;m_nbCollision=0;		
 		m_smother =MAXSMOOTH_LOOP;m_currentThrown = NULL;m_done = false;		
 		m_oldPosition.set(0,0,0);
 	};
@@ -52,8 +52,7 @@ class HapticData
 	hduVector3Dd m_realPosition;	
 	HDint m_buttons;
 	bool m_ready;
-	int m_nbCollision;
-	btVector3* m_near;	
+	int m_nbCollision;	
 	btRigidBody * m_currentThrown;	
 	int m_smother;
 	bool m_done;
@@ -69,17 +68,17 @@ class HapticSynchronizer
 	HapticSynchronizer(){m_data=NULL;};
 	~HapticSynchronizer(){if(m_data!=NULL){delete m_data;}};
 	void setData(HapticData *data){m_data=data;}
-	void setThrownList(std::vector <btRigidBody *> thrown);
+	
 	void setThrown(btRigidBody * thrown);
 	void setImpactPos(btVector3* m_impactPos);	
-	void setNear(btVector3* pos);
+	
 	void setFeadBack();
 	HapticData * m_data;
 	HapticData m_free;	
 	btTransform m_effectors;
 	btTransform* m_cameraViews;
 	btGeneric6DofConstraint* m_constraints;
-	btScalar m_timeK;
+
 };
 
 class HapticDevice
@@ -105,7 +104,7 @@ public:
 	static btTransform transform(HapticSynchronizer* hdd,HapticData* data);
 	static hduVector3Dd invertTransform(btVector3* trans,btTransform* invertCamera);
 	static hduVector3Dd ComputeForce(hduVector3Dd* effector, hduVector3Dd* target, hduVector3Dd* velocity);
-	static hduVector3Dd ForecToImpact(hduVector3Dd* effector,hduVector3Dd* impactpos);
+	hduVector3Dd ForceToImpact(hduVector3Dd* effector,hduVector3Dd* impactpos);
 	btVector3 getEffectorPosition();
 
 	HDdouble betweenTwoPoints(hduVector3Dd point1, hduVector3Dd point2);
@@ -127,6 +126,7 @@ public:
 	void setTrajectory(std::vector<btVector3*>* points, int index,unsigned int stopIndex);
 
 	int getCaughtIndex();
+	int getCaughtScore();
 	void showTarget(unsigned int pos);
 	void showTarget(btRigidBody * target);
 	bool isReadyLaunch();
@@ -140,6 +140,8 @@ public:
 	void resetThrow();
 	bool isCaught();
 
+	void setFeadBack(bool WithOrWithout);
+	void FeadBack();
 	void clearTrajectory();
 	HDdouble distanceToTrajectory(hduVector3Dd effector,int trajectoryIndex,btTransform* invertCamera);
 	static void truncate(HDdouble* x,HDdouble* y,HDdouble* z);
@@ -156,8 +158,7 @@ private:
 	btTypedConstraint* m_itsConstraints[NB_DEVICES_MAX];
 	btTransform  * m_cameraViews[NB_DEVICES_MAX];
 	HDint m_oldButtons[NB_DEVICES_MAX];	
-	btVector3* m_impactPos;
-	btVector3* m_hipoPos;
+	btVector3* m_impactPos;	
 	std::vector <btVector3*> m_possibleImpact;
 	btScalar m_variator; 
 	Object* m_ThrownObject;
@@ -170,8 +171,13 @@ private:
 	bool m_posSet;
 	bool m_targetChoosen;
 	bool m_coll;
-	bool m_Feedback;
-	bool m_quick;
+	bool m_Feedback;	
+	bool m_devine;
+	int m_sible;
+	HDdouble m_lastFactor[Nbr_factor];
+	int m_factor_index;
+	hduVector3Dd m_Force;
+	HDdouble m_selectedDistance;
 	btRigidBody* m_ground;	
 };
 

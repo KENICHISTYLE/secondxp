@@ -8,14 +8,14 @@
 #include <sstream>
 #include "Logs.h"
 
-const btScalar BALL_MASS = 0.01;
-const btScalar Ball_Size = 0.3;
+const btScalar BALL_MASS = 0.06;
+const btScalar Ball_Size = 0.25;
 const btScalar Effector_Mass = 2;
 const btScalar Effector_Size = 0.08f;
 const btScalar m_timeSpeed = 0.01;
-const int canonNbr = 4;
+const int canonNbr = 6;
 const float Gut_vz = 5.0f;
-const float Gut_vy = 11.0f;
+const float Gut_vy = 13.2f;
 
 using namespace std;
 
@@ -52,13 +52,13 @@ public:
 	void teleportX(Object* canon,btScalar x);
 
 	void getFinalPos(btTransform* target,int targetIndex, btScalar init_vx,btScalar x_dec);
-	btVector3 getFinalPos(btTransform* target, btScalar init_vx);
-	btScalar setVelocityTarget(btScalar time,btRigidBody* target,btScalar x);
-	void throwObject();	
-	void throwMultiObject(btScalar Onumber);
+	
+	void setVelocityTarget(btScalar time,btRigidBody* target,btScalar x);
+		
 	void throwMultiObject(btScalar Onumber, float canonpos, int index);
 	void setHapticParam();
 	void waitFeadBack();
+	void setAfterColideCoord();
 	void deleteThrowedObjects();
 	//callbacks
 	static void newConstraint(void * ptr,btRigidBody * body,unsigned int id);
@@ -89,7 +89,7 @@ public:
 	vector <btRigidBody *> m_throwed_rigid_list;
 	vector <btTransform*> m_throwed_transform;	
 	vector <btVector3*> m_trajectory[ThronNumber];
-	bool m_goodToCatch[ThronNumber];
+	int m_goodToCatch[ThronNumber];
 	int m_score;
 	int m_lancerNbr;
 	int m_catchs;
@@ -107,4 +107,8 @@ public:
 	btCollisionShape* m_canonShape;	
 	int m_CanonPos[canonNbr];	
 	int m_time;
+	string m_note;
+	bool m_eval;
+	bool m_withTraj;
+	bool m_feed;
 };

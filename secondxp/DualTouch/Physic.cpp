@@ -11,20 +11,70 @@ Physic::~Physic(void)
 	exit();
 }
 
+void Physic::objectColide(btRigidBody* obA, btRigidBody* obB){
+	int s1 = -1;
+	int s2 = -1;
+	for(int i = 0; i <= ThronNumber; i++){
+		if(m_thrownPossibleContact[i].obA == obA)		
+			s1 = i;
+		if(m_thrownPossibleContact[i].obA == obB)
+			s2 = i;
+	}
+
+	if(s1 != -1 && s2 != -1 && s1 != s2){
+		m_thrownPossibleContact[s1].obB = obB;
+		m_thrownPossibleContact[s1].free = false;
+		m_collBetweenThrown = true;
+	}
+}
+
+bool Physic::collHapend(){    
+	bool temp = m_collBetweenThrown;
+	m_collBetweenThrown = false;
+	return temp;
+}
+
+bool Physic::isObjectCollide(){
+	for(int i = 0; i <= ThronNumber; i++){
+		if(m_thrownPossibleContact[i].free == false)
+		{
+			m_thrownPossibleContact[i].free = true;
+			return true;
+		}		
+	}
+	return false;
+}
+
+void Physic::clearColide(){
+	for(int i = 0; i <= ThronNumber; i++){
+		m_thrownPossibleContact[i].free = true;
+		m_thrownPossibleContact[i].obA = NULL;
+		m_thrownPossibleContact[i].obB = NULL;
+	}
+	m_collBetweenThrown = false;
+}
+
+void Physic::setThrown(std::vector <btRigidBody *>* thrown){
+	int j= 0;
+	for(unsigned int i = 0; i < thrown->size(); i++){		
+		m_thrownPossibleContact[j].obA = (*thrown)[i];
+		++j;
+	}
+}
 
 void Physic::init()
 {
 
 	m_dispatcher=0;
 	btDefaultCollisionConstructionInfo cci;
-	cci.m_defaultMaxPersistentManifoldPoolSize = 10;// 32768;
+	cci.m_defaultMaxPersistentManifoldPoolSize = 100;// 32768;
 	m_collisionConfiguration = new btDefaultCollisionConfiguration(cci);
 	
 	
 	m_dispatcher = new	btCollisionDispatcher(m_collisionConfiguration);
 
-	btVector3 worldAabbMin(-1000,-1000,-1000);
-	btVector3 worldAabbMax(1000,1000,1000);
+	btVector3 worldAabbMin(-500,-500,-500);
+	btVector3 worldAabbMax(500,500,500);
 
 	m_broadphase = new btAxisSweep3(worldAabbMin,worldAabbMax,maxProxies);
 
@@ -40,16 +90,16 @@ void Physic::init()
 	m_dynamicsWorld->setDebugDrawer( m_debugDrawer );
 
 	world->getSimulationIslandManager()->setSplitIslands(false);
-	world->getSolverInfo().m_numIterations = 16;
+	world->getSolverInfo().m_numIterations = 10;
 	world->getSolverInfo().m_solverMode = SOLVER_SIMD+SOLVER_USE_WARMSTARTING;//+SOLVER_RANDMIZE_ORDER;
 	
-	m_dynamicsWorld->getDispatchInfo().m_enableSPU = true;
+	m_dynamicsWorld->getDispatchInfo().m_enableSPU = false;
 	m_dynamicsWorld->setGravity(btVector3(0, 0,-2));
 	
 
 	m_previous = 0;
 	
-
+	clearColide();
 //	clientResetScene();
 }
 
@@ -252,6 +302,9 @@ void Physic::tick()
 			//btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
 			btCollisionObject* obA = (btCollisionObject*)(contactManifold->getBody0());
 			btCollisionObject* obB = (btCollisionObject*)(contactManifold->getBody1());
+			
+			// thrown or not
+			objectColide(static_cast<btRigidBody*>(obA),static_cast<btRigidBody*>(obB));
 
 			if(constrainted==obA || constrainted==obB)
 			{

@@ -11,7 +11,11 @@ HapticDevice::HapticDevice()
 		m_oldButtons[i] = HD_INVALID_HANDLE;			
 	}
 	m_nbDevices = 0;
-	m_coll = false;
+	m_coll = false;	
+	m_factor_index = 0;
+	for(int k = 0;k<Nbr_factor;k++)
+		m_lastFactor[k] = 0;
+	    
 	//m_time = 0;
 }
 
@@ -59,7 +63,7 @@ HDCallbackCode HDCALLBACK HapticDevice::aSchedule(void *pUserData)
 			force = data->m_force;
 			/* if we are nearly at the center don't recalculate anything,
 				since the center is a singular point. */
-			if(data->m_nbCollision>0)
+			if(data->m_nbCollision > 0)
 			{
 				if(distance.magnitude() > EPSILON && data->m_ready)
 				{   
@@ -69,7 +73,7 @@ HDCallbackCode HDCALLBACK HapticDevice::aSchedule(void *pUserData)
 						k = STIFFNESS, and x is the penetration vector from 
 						the actual position to the desired position. */
 
-					force = STIFFNESS*distance;			
+					force += STIFFNESS*distance;			
 					
 				} 
 			}
@@ -200,6 +204,9 @@ void HapticDevice::setDThrownObject(Object * thrown){
 	//m_ThrownObject = thrown;
 }
 
+void HapticDevice::setFeadBack(bool WithOrWithout){
+	m_Feedback = WithOrWithout;
+}
 
 void HapticDevice::setThrown(btRigidBody * thrown){
 	for(unsigned int i=0; i< NB_DEVICES_MAX;i++)
@@ -214,6 +221,7 @@ void HapticDevice::resetThrow(){
 	m_thrownRigids = NULL;
 	m_caught = NULL;
 	clearTrajectory();
+	m_selectedDistance = Distance_max*2;
 }
 
 void HapticDevice::setConstraint(unsigned int devicesID, btGeneric6DofConstraint* constraint)
@@ -244,7 +252,8 @@ void HapticDevice::init()
 		m_canLaunch = false;
 		m_posSet = false;
 		m_targetChoosen = false;
-		m_Feedback = false; 
+		m_Feedback = true; 
+		m_devine = true;
 	}
 }
 
@@ -335,7 +344,7 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 		if((m_hss[i].m_free.m_buttons & HD_DEVICE_BUTTON_1) != 0 )// (m_hss[i].m_free.m_buttons & HD_DEVICE_BUTTON_2))
 		{
 			m_hss[i].m_free.m_done = true;	
-			m_hss[i].m_free.m_force = hduVector3Dd(0,0.3,0);
+			m_hss[i].m_free.m_force = hduVector3Dd(0,0.1,0);
 		}		
 		
 		if(m_constraints[i] != NULL)
@@ -369,7 +378,10 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 											dynamic.addConstraint(m_itsConstraints[i],true);
 											m_newConstraint(m_ptr,collideBody,i);
 											m_caught = collideBody;
-											m_coll = true;						
+											m_coll = true;	
+											m_devine = false;
+											showTarget(collideBody);
+											deactivateMove();
 								}
 							}else
 								// realise it when button 1 pressed
@@ -385,7 +397,8 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 										m_hss[i].m_free.m_done = true;
 										showTarget(collideBody);
 										m_variator = 0;
-										m_coll = false;
+										m_coll = false;										
+										deactivateMove();
 								}
 							
 					}
@@ -410,7 +423,8 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 						m_hss[i].m_free.m_done = true;
 						if(m_caught != NULL)
 							showTarget(m_caught);	
-						m_coll = false;
+						m_coll = false;						
+						deactivateMove();
 					}						
 					
 				}
@@ -422,10 +436,8 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 			else
 				// launch an other target
 				if((m_hss[i].m_free.m_buttons & HD_DEVICE_BUTTON_2) != 0 && (m_oldButtons[i] & HD_DEVICE_BUTTON_2) == 0)
-				{
-				m_hss[i].m_free.m_done = true;
-				m_canLaunch = true;
-				deactivateMove();
+				{				
+				m_canLaunch = true;				
 				}				
 
 			m_oldButtons[i]=m_hss[i].m_free.m_buttons;
@@ -444,66 +456,76 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 			btTransform camInv = m_cameraViews[i]->inverse();
 			// detecte the direction
 			HDdouble deplacement = betweenTwoPoints(m_hss[i].m_free.m_atThrowPos,m_hss[i].m_free.m_position);
-			HDdouble distanceMax = 0;
+			HDdouble distanceMax = Distance_max;
 			
 			hduVector3Dd move = m_hss[i].m_free.m_oldPosition - m_hss[i].m_free.m_position;
-			if(move.magnitude() >= Quick_Dicplacement){
-				distanceMax = Quick_Distance_max;	
-				activateMove();
-				m_quick = true;
-			}else
-             if (m_quick) 
-			{
-				m_quick = false;
-				deactivateMove();
-				//distanceMax = Slow_Distance_max; 
-			}
-			m_hss[i].m_free.m_force = hduVector3Dd(0,0.3,0);
-
-			if( m_thrownRigids != NULL && m_thrownRigids->size()>0 && deplacement > distanceMax && !m_Feedback /* && !m_targetChoosen */){
-				btTransform trans;				
+			//if(move.magnitude() >= Quick_Dicplacement){
+			//	//distanceMax = Slow_Distance_max;	
+			//	//activateMove();
+			//    //deactivateMove();
+			//}else             
+			//{				
+			//	//deactivateMove();
+			//	//distanceMax = Slow_Distance_max; 
+			//}
+			m_hss[i].m_free.m_force = hduVector3Dd(0,0.1,0);
+			HDdouble selectedDistance = 0;
+			
+			if( m_Feedback && m_devine && m_thrownRigids != NULL && m_thrownRigids->size()>0 && deplacement > distanceMax && m_sible == 0 /* && !m_targetChoosen */){
+				//btTransform trans;				
 				//hduVector3Dd line = trajectoryLine(m_hss[i].m_free.m_position, m_hss[i].m_free.m_oldPosition);
-				HDdouble distance = DBL_MAX;
+				HDdouble distance = Quick_Distance_max;
+				if(move.magnitude() >= Quick_Dicplacement)
+						distance = Slow_Distance_max;
 				//unsigned int targ = 0;
-				for(unsigned int i = 0; i<m_thrownRigids->size(); i++){
-					trans = (*m_thrownRigids)[i]->getWorldTransform();
-					btVector3 vec,v2;
-					v2 =btVector3(trans.getOrigin());
+				for(unsigned int j = 0; j<m_thrownRigids->size(); j++){
+					//trans = (*m_thrownRigids)[j]->getWorldTransform();
+					//btVector3 vec,v2;
+					//v2 =btVector3(trans.getOrigin());
 					//if(m_possibleImpact.size()> 0)
-						//vec = btVector3(*m_possibleImpact[i]);
+						//vec = btVector3(*m_possibleImpact[j]);
 				
-					hduVector3Dd target = invertTransform(&v2, &camInv);
+					//hduVector3Dd target = invertTransform(&v2, &camInv);
 					
 					//hduVector3Dd target2 = invertTransform(&vec, &camInv);
 					
 					//HDdouble d = distanceToPath(line,target) * 0.2 ;
-					HDdouble d = distanceToTrajectory(m_hss[i].m_free.m_position,i,&camInv);
+					HDdouble d = distanceToTrajectory(m_hss[i].m_free.m_position,j,&camInv);
 					
 					//HDdouble d = betweenTwoPoints(target,m_hss[i].m_free.m_position);
 					//HDdouble d2 = betweenTwoPoints(target2,m_hss[i].m_free.m_position);
-					hduVector3Dd imp = invertTransform(m_possibleImpact[i], &camInv);					
-				    HDdouble sc = dott(move,imp);
-					if(sc >= 0)
+				//	hduVector3Dd imp = invertTransform(m_possibleImpact[j], &camInv);					
+				//	HDdouble sc = move.dotProduct(imp);
+				//	if(sc >= 0)
 						if((d)<distance){
-							if(m_Thrown != (*m_thrownRigids)[i]){
-								m_hss[i].m_free.m_currentThrown = (*m_thrownRigids)[i];
+							if(m_Thrown != (*m_thrownRigids)[j]){
+								m_hss[i].m_free.m_currentThrown = (*m_thrownRigids)[j];
 								distance = d;
-								m_Thrown = (*m_thrownRigids)[i];		
-								m_impactPos = m_possibleImpact[i];
+								m_Thrown = (*m_thrownRigids)[j];		
+								m_impactPos = m_possibleImpact[j];
 								m_targetChoosen = true;							
 								activateMove();
+								selectedDistance = d;	
+								m_sible = 6;
 								//deactivateMove();
 								//targ = i;
 							}
-					}
+						}
 					
 				}
 				if(m_targetChoosen)
 					showTarget(m_Thrown);
+				else
+					m_sible = 0;
 				//m_time = Time;
 			}
 			if(m_canLaunch){
 				//m_time = Time;
+				m_hss[i].m_free.m_done = true;				
+				m_variator = 0.001;	
+				m_sible = 0;
+				m_devine = true;
+				deactivateMove();
 				m_hss[i].m_free.m_atThrowPos = m_hss[i].m_free.m_position;
 			}
 			m_hss[i].m_free.m_oldPosition = m_hss[i].m_free.m_position ;
@@ -514,27 +536,30 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 					
 					
 					if(!m_hss[i].m_free.m_done){	
-						if(m_variator < VARIATION_MAX)
-							m_variator += 0.005;
+					
+						hduVector3Dd helpForce = ForceToImpact(&pos,&impact);	
+						hduVector3Dd temp = impact - pos; 
+						HDdouble d = temp.magnitude();
+						//std::cout<< " D " << d << std::endl;
+
+						if(!helpForce.isZero(EPSILON)){						 	    
+							
+							    m_hss[i].m_free.m_force = 0.7 * helpForce;
+								m_Force = helpForce;							
 						
-						hduVector3Dd helpForce = ForecToImpact(&pos,&impact);
-						if(!helpForce.isZero(EPSILON)){
-							m_hss[i].m_free.m_force = m_variator * helpForce;		
-							//std::cout<<" "<<m_variator<<" "<<std::endl;
 						}else 
 							{
-							 m_hss[i].m_free.m_done = true;							
-							 m_variator = 0.01;
+							m_hss[i].m_free.m_force = m_Force;							
 						    }
 				
-					}else{							
-						 m_variator = 0.01;
-						 m_hss[i].m_free.m_force = hduVector3Dd(0,0,0);
 					}
 				
 			}			
 			hdScheduleSynchronous(sScheduleIn, &m_hss, HD_DEFAULT_SCHEDULER_PRIORITY);
-		
+						
+			m_selectedDistance = selectedDistance;
+			if(m_sible > 0)
+				m_sible--;
 	}
 }
 
@@ -547,8 +572,8 @@ btTypedConstraint* HapticDevice::createConstraint(btRigidBody &myBody,btRigidBod
 
 	btPoint2PointConstraint * constraint = new btPoint2PointConstraint(myBody,itsBody,btVector3(0,0,0),itsPos);
 	constraint->m_setting.m_impulseClamp = 100;
-	constraint->m_setting.m_tau = 0.001f;
-	
+	constraint->m_setting.m_tau = 0.001f;		
+
 	return constraint;
 
 	/*itsBody.setMassProps(0.0001f,btVector3(16,16,16));
@@ -588,10 +613,6 @@ bool HapticDevice::isCaught(){
 	return m_coll;
 }
 
-void HapticSynchronizer::setThrownList(std::vector <btRigidBody *> thrown){
-	//m_data->m_thrown = thrown;
-}
-
 void HapticSynchronizer::setThrown(btRigidBody * thrown){
 	m_free.m_currentThrown = thrown;
 	m_free.m_done = false;
@@ -624,12 +645,12 @@ void HapticDevice::waitTargetChoice(){
 
 void HapticDevice::activateMove(){
 	m_posSet = true;
-	m_Feedback = true; 
+    //m_Feedback = true; 
 }
 
 void HapticDevice::deactivateMove(){
 	m_posSet = false;
-	m_Feedback = false; 
+	//m_Feedback = false; 
 }
 
 HDdouble HapticDevice::dott(hduVector3Dd v, hduVector3Dd u){
@@ -666,6 +687,17 @@ void HapticDevice::showTarget(btRigidBody* target){
 			};
 	
 
+}
+
+int HapticDevice::getCaughtScore(){
+	for(unsigned int i= 0 ;i< m_thrownObjects->size();i++)
+			{				
+				if((*m_thrownObjects)[i]->getshape() == m_caught->getCollisionShape()){
+					return ((*m_thrownObjects)[i])->getScore();
+				}
+			};
+
+	return 0;
 }
 
 void HapticDevice::truncate(HDdouble* x,HDdouble* y,HDdouble* z){
@@ -718,9 +750,40 @@ hduVector3Dd HapticDevice::ComputeForce(hduVector3Dd* effector, hduVector3Dd* ta
 	return inbetween;
 }
 
-hduVector3Dd HapticDevice::ForecToImpact(hduVector3Dd* effector,hduVector3Dd* impactpos){
-		hduVector3Dd inbetween = *impactpos - *effector;	
-	return inbetween;
+hduVector3Dd HapticDevice::ForceToImpact(hduVector3Dd* effector,hduVector3Dd* impactpos){
+	    // use Yamada and al force model
+		hduVector3Dd inbetween = *impactpos - *effector ;
+		hduVector3Dd force = hduVector3Dd(0.0,0.3,0.0);
+		HDdouble phi = 2.5;
+		HDdouble sigma = 0.091;
+
+		HDdouble s2 = pow(sigma, 2);
+
+		HDdouble x = inbetween.magnitude();
+						
+		HDdouble f = phi * sqrt( x/ s2 ) * std::exp((s2 - pow(x,2))/4*s2);
+		
+		inbetween.normalize();
+		HDdouble some =0;
+		int l = 0;
+		for(int k = 0;k<Nbr_factor;k++){
+				if( m_lastFactor[k] != 0){
+					some += f;
+					++l; 
+				}
+	    	}
+				
+		f = (some + f)/ (l+1);
+		if(f >= 1 )
+			force +=  (1 - (1/f)) * inbetween;
+		else
+			force +=  0.01 * inbetween;
+		//std::cout<< " f " << f  << " " << force[0] << "  " << force[1] << " " << force[2] << std::endl;
+		
+
+		m_lastFactor[m_factor_index] = f;		
+		m_factor_index = (m_factor_index + 1) % Nbr_factor;
+	return force ;
 }
 
 void HapticDevice::setImpactPos(btVector3* pos){
@@ -749,16 +812,10 @@ hduVector3Dd HapticDevice::trajectoryLine(hduVector3Dd p1,hduVector3Dd p2){
 }
 
 HDdouble HapticDevice::betweenTwoPoints(hduVector3Dd p1, hduVector3Dd p2){
-	//hduVector3Dd p1 = point1;
-	//hduVector3Dd p2 = point2;
-	//p1.normalize();
-	//p2.normalize();
+	
 	return sqrt(pow((p1[0] - p2[0]) , 2)+
 				pow((p1[1] - p2[1]) , 2)+
-				pow((p1[2] - p2[2]) , 2));
-	/*return(abs(p1[0] - p2[0])+
-		   abs(p1[1] - p2[1])+
-		   abs(p1[2] - p2[2]));*/
+				pow((p1[2] - p2[2]) , 2));	
 }
 
 HDdouble HapticDevice::distanceToPath(hduVector3Dd path,hduVector3Dd p){
@@ -777,7 +834,7 @@ void HapticDevice::clearPossibleImpactPoints(){
 }
 
 void HapticDevice::setTrajectory(std::vector<btVector3*>* points, int index,unsigned int stop){
-		
+	//std::cout << stop << std::endl;
 	for(unsigned int i = 0; i < stop; i++)
 	{
 		if(i > stop) return;
@@ -788,11 +845,13 @@ void HapticDevice::setTrajectory(std::vector<btVector3*>* points, int index,unsi
 		
 }
 
-
+void HapticDevice::FeadBack(){
+	m_Feedback = !m_Feedback;
+}
 HDdouble HapticDevice::distanceToTrajectory(hduVector3Dd eff,int index,btTransform* invCam){
 	HDdouble d = DBL_MAX;
 	if(m_trajectory[index].size() > 0)
-		for(int i = 0; i < m_trajectory[index].size(); i++){
+		for(int i = 0; i < m_trajectory[index].size(); i++){			
 			btVector3* temp = (m_trajectory[index])[i];		
 			hduVector3Dd p = invertTransform(temp, invCam);
 			HDdouble d1 = betweenTwoPoints(eff,p);
@@ -801,6 +860,8 @@ HDdouble HapticDevice::distanceToTrajectory(hduVector3Dd eff,int index,btTransfo
 				m_possibleImpact[index] = (m_trajectory[index])[i];
 				d = d1;
 			}
+			if(temp->y() <= getEffectorPosition().y())
+				return d;			
 		}
 
 	return d;

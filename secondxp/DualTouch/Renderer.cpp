@@ -109,7 +109,7 @@ void Renderer::replaceObject(Object* oldObject, Object* newObject)
 
 void Renderer::init()
 {
-	m_matDiffuse[0] = 0.5f;m_matDiffuse[1] = 0.5f;m_matDiffuse[2] = 0.5f;m_matDiffuse[3] = 1.0f;
+	m_matDiffuse[0] = 0.6f;m_matDiffuse[1] = 0.6f;m_matDiffuse[2] = 0.6f;m_matDiffuse[3] = 1.0f;
 	m_matAmbient[0] = 0.5f;m_matAmbient[1] = 0.5f;m_matAmbient[2] = 0.5f;m_matAmbient[3] = 1.0f;
 
 	GLfloat m_lightDiffuse[] = {0.6f,0.6f,0.6f};
@@ -277,11 +277,9 @@ void Renderer::display()
 	glEnable(GL_LIGHTING);
 	glDepthFunc(GL_LESS);
 	glDisable(GL_STENCIL_TEST);
-	glDisable(GL_CULL_FACE);
-		
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,black);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,black);
-	printText(); 
+	glDisable(GL_CULL_FACE);		
+	
+	infoGame();	
 	//glutSwapBuffers();
 }
 
@@ -309,7 +307,7 @@ void Renderer::renderScene()
 	//glPushMatrix();
 	//glEnable(GL_COLOR_MATERIAL);
 
-
+	
 	for(unsigned int i=0;i<m_objects.size();i++)
 	{if(m_objects[i] != NULL){
 			glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,m_objects[i]->m_color.m_floats);
@@ -501,7 +499,13 @@ void Renderer::drawCone(const btScalar & radius , const btScalar & height)
 	glEnable(GL_LIGHTING);
 	glCullFace (GL_BACK);				// Reset The Face To Be Culled
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);		// Reset Back-Facing Polygon Drawing Mode
-	glutSolidCone(radius,height,slices,2);	
+	glutSolidCone(radius,height,slices,2);
+	GLUquadricObj *quadObj = gluNewQuadric();
+    glPushMatrix();
+	glRotatef(-180.0f, 0.0f, 1.0f, 0.0f);
+	gluDisk(quadObj,0,radius,slices, 2);
+	glPopMatrix();
+	gluDeleteQuadric(quadObj);
 }
 
 void Renderer::drawCylinder(const btScalar & radius,const btScalar & halfHeight,int upAxis)
@@ -581,6 +585,7 @@ void Renderer::drawCylinder(const btScalar & radius,const btScalar & halfHeight,
 
 void Renderer::drawSphere(const btScalar & radius)
 {
+	GLUquadricObj *quad = gluNewQuadric();
 	if(m_oultines)
 	{
 		// Outlines
@@ -588,13 +593,18 @@ void Renderer::drawSphere(const btScalar & radius)
 		glCullFace (GL_FRONT);				
 		glPolygonMode (GL_BACK, GL_LINE);	
 		glColor3fv(m_wireColor);
-		glutSolidSphere(radius,26,13);
+	
+		gluSphere(quad,radius,20,10);
+		glutSolidSphere(radius,20,13);		
 	}
 
 	glEnable(GL_LIGHTING);
 	glCullFace (GL_BACK);				// Reset The Face To Be Culled
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);		// Reset Back-Facing Polygon Drawing Mode
-	glutSolidSphere(radius,26,13);
+	glutSolidSphere(radius,20,10);
+	gluSphere(quad,radius,20,10);
+	gluDeleteQuadric(quad);
+	
 }
 
 void Renderer::drawShadow(const btCollisionShape* shape,const btVector3 &extrusion)
@@ -785,4 +795,37 @@ void Renderer::printText(){
 void Renderer::setText(std::string* text){
 	delete m_text;
 	 m_text = text;
+}
+
+
+void Renderer::infoGame(){
+		
+	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,black);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,black);
+	
+
+	printText(); 
+
+	glEnter2D();
+	glWrite(10, glGetViewportHeight() - 10, GLUT_BITMAP_HELVETICA_12, &(std::string(" Rules : ")));
+
+	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,red);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,red);
+
+	glWrite(15, glGetViewportHeight() - 25, GLUT_BITMAP_HELVETICA_10, &(std::string(" Red ==> 20 :) ")));
+
+	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,blue);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,blue);
+
+	glWrite(15, glGetViewportHeight() - 40, GLUT_BITMAP_HELVETICA_10, &(std::string(" blue ==> 10 :] ")));
+
+	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,yellow);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,yellow);
+
+	glWrite(15, glGetViewportHeight() - 55, GLUT_BITMAP_HELVETICA_10, &(std::string(" yellow ==> -10 X( ")));
+
+	glLeave2D();
+
+	
+			
 }

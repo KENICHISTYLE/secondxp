@@ -3,7 +3,7 @@
 #include "BulletCollision\CollisionShapes\btCollisionShape.h"
 #include <iostream>
 
-const int ThronNumber = 3;
+const int ThronNumber = 4;
 const btVector3 green(0.0f,1.0f,0.0f);
 const btVector3 dark_red(0.4f,0.15f,0.15f);
 const btVector3 orange(0.8f,0.6f,0.2f);
@@ -28,7 +28,11 @@ public:
 	void print();
 	btVector3 getpos();
 	btCollisionShape * getshape();
+	void setScore(int score);
+	int getScore();
 	void setColor(const btVector3 &color);	
 	void setTransform(const btTransform &newtrans);
 	btTransform* getTransform();
+
+	int m_score;
 };

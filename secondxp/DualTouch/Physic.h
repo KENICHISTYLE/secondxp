@@ -33,6 +33,13 @@ const int maxOverlap = 65535;
 class Physic
 {
 public:
+	
+	struct contactPair{
+		bool free;
+		btRigidBody* obA;
+		btRigidBody* obB;
+	};
+	
 	Physic(void);
 	~Physic(void);
 	void init();
@@ -46,17 +53,20 @@ public:
 	void resetRigidBody(btRigidBody* body);
 	void delthrown(vector<btRigidBody*>* thrown);
 	void deleteRigidBody(btRigidBody* body);
+	void objectColide(btRigidBody* obA, btRigidBody* obB);
+	void clearColide();
+	void setThrown(std::vector <btRigidBody *>* thrown);
+	bool isObjectCollide();
+	bool collHapend();
 
 	btRigidBody* addRigidBody(float mass, btTransform * startTransform,btCollisionShape* shape);
 	btAlignedObjectArray<btCollisionShape*>	m_collisionShapes;
 	
 
-
 	btBroadphaseInterface*	m_broadphase;
 	btCollisionDispatcher*	m_dispatcher;
 
-
-
+	
 	btConstraintSolver*	m_solver;
 
 	btCollisionAlgorithmCreateFunc*	m_boxBoxCF;
@@ -69,4 +79,7 @@ public:
 
 	GLDebugDrawer * m_debugDrawer;
 
+	struct contactPair m_thrownPossibleContact[ThronNumber];	
+
+	bool m_collBetweenThrown;
 };

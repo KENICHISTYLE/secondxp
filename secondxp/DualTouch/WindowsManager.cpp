@@ -7,8 +7,8 @@ WindowsManager::WindowsManager(void)
 	//m_subWindow = true
 	m_subWindow = false;
 	m_fullScreen = false;
-	m_width = IntialSize;
-	m_height = IntialSize;
+	m_width = IntialSize * 14/9;
+	m_height = IntialSize ;
 	getDesktopResolution();
 	m_previous = 0;
 }
@@ -24,9 +24,9 @@ void WindowsManager::createWindows(int argc, char** argv)
 	glutInitDisplayMode(GLUT_MULTISAMPLE | GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
 
 	if(m_subWindow)
-		glutInitWindowSize(IntialSize*2,IntialSize); 
+		glutInitWindowSize(m_width*2,IntialSize); 
 	else
-		glutInitWindowSize(IntialSize,IntialSize); 
+		glutInitWindowSize(m_width,m_height); 
 
 	m_window1 = glutCreateWindow("Haptic launch"); 
 	glutPositionWindow(IntialPosition,IntialPosition); 

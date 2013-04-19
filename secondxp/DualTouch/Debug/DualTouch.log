@@ -1,33 +1,13 @@
-﻿La génération a démarré 12/04/2013 20:19:18.
+﻿La génération a démarré 19/04/2013 21:24:37.
      1>Projet "C:\Users\amghar\Documents\Visual Studio 2010\Projects\secondxp\secondxp\DualTouch\DualTouch.vcxproj" sur le nœud 2 (build cible(s)).
      1>InitializeBuildStatus:
-         Création de "Debug\Multi target.unsuccessfulbuild", car "AlwaysCreate" a été spécifié.
+         Mise à jour de l'horodatage "Debug\Multi target.unsuccessfulbuild".
        ClCompile:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\sdk\bullet-2.78\src" /I"C:\sdk\freeglut-2.6.0\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt DualTouch.cpp HapticDevice.cpp Main.cpp WindowsManager.cpp
-         DualTouch.cpp
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\sdk\bullet-2.78\src" /I"C:\sdk\freeglut-2.6.0\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Renderer.cpp
+         Renderer.cpp
          Note: including lib: glut32.lib
          
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\dualtouch.cpp(270): warning C4800: 'int' : valeur forcée à la valeur booléenne 'true' ou 'false' (avertissement sur les performances)
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\dualtouch.cpp(497): warning C4808: '2' case n'est pas une valeur valide dans une condition switch de type 'bool'
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\dualtouch.cpp(497): warning C4809: l'instruction switch a une étiquette 'default' redondante ; toutes les étiquettes 'case' possibles sont fournies
-         Génération de code en cours...
-         Compilation en cours...
-         WindowsManager.cpp
-         Note: including lib: glut32.lib
-         
-         Main.cpp
-         Note: including lib: glut32.lib
-         
-         HapticDevice.cpp
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\hapticdevice.h(41): warning C4305: 'argument' : troncation de 'double' à 'const btScalar'
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\hapticdevice.h(41): warning C4305: 'argument' : troncation de 'double' à 'const btScalar'
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\hapticdevice.h(41): warning C4305: 'argument' : troncation de 'double' à 'const btScalar'
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\hapticdevice.cpp(518): warning C4305: '+=' : troncation de 'double' à 'btScalar'
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\hapticdevice.cpp(527): warning C4305: '=' : troncation de 'double' à 'btScalar'
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\hapticdevice.cpp(531): warning C4305: '=' : troncation de 'double' à 'btScalar'
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\hapticdevice.cpp(769): warning C4018: '<' : incompatibilité signed/unsigned
-     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\hapticdevice.cpp(795): warning C4018: '<' : incompatibilité signed/unsigned
-         Génération de code en cours...
+     1>c:\users\amghar\documents\visual studio 2010\projects\secondxp\secondxp\dualtouch\renderer.cpp(786): warning C4018: '<' : incompatibilité signed/unsigned
        ManifestResourceCompile:
          Toutes les sorties sont à jour.
        Link:
@@ -54,4 +34,4 @@
 
 La génération a réussi.
 
-Temps écoulé 00:00:11.03
+Temps écoulé 00:00:02.77

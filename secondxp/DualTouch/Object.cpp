@@ -6,6 +6,7 @@ Object::Object(btCollisionShape * shape,btTransform * transform,const btVector3 
 	m_transform = transform;
 	m_color = color;
 	m_texture = false;
+	m_score = 0;
 }
 
 Object::~Object(void)
@@ -15,7 +16,15 @@ Object::~Object(void)
 }
 
 void Object::setColor(const btVector3 &color){
-	m_color = color;;
+	m_color = color;
+}
+
+void Object::setScore(int score){
+	m_score = score;
+}
+
+int Object::getScore(){
+	return m_score;
 }
 
 void Object::print(){

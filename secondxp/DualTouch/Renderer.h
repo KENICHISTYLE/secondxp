@@ -46,6 +46,7 @@ public:
 	void setText(std::string* text);
 	void WriteStatus(std::string* text);
 	void setPoints(std::vector<btVector3*>* points, int index);
+	void infoGame();
 	void clearPoints();
 private:
 
