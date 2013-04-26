@@ -8,14 +8,15 @@
 #include <sstream>
 #include "Logs.h"
 
-const btScalar BALL_MASS = 0.06;
-const btScalar Ball_Size = 0.25;
-const btScalar Effector_Mass = 2;
+const btScalar BALL_MASS = 1.0;
+const btScalar Ball_Size = 0.3;
+const btScalar Effector_Mass = 4;
 const btScalar Effector_Size = 0.08f;
 const btScalar m_timeSpeed = 0.01;
 const int canonNbr = 6;
 const float Gut_vz = 5.0f;
 const float Gut_vy = 13.2f;
+const double Time = 10 ;
 
 using namespace std;
 
@@ -106,7 +107,7 @@ public:
 	Object* m_canons[canonNbr];
 	btCollisionShape* m_canonShape;	
 	int m_CanonPos[canonNbr];	
-	int m_time;
+	time_t m_time;
 	string m_note;
 	bool m_eval;
 	bool m_withTraj;

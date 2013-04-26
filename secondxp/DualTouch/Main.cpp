@@ -26,7 +26,7 @@ void entry2(int state);
 
 WindowsManager wm;
 
-void main(int argc, char** argv)
+int main(int argc, char** argv)
 {
 	//Give function pointers to WindowsManager
 	//and let WindowsManager do the callback connection with glut.
@@ -55,6 +55,8 @@ void main(int argc, char** argv)
 	//wm.m_entry2 = entry2;
 
 	wm.createWindows(argc,argv);
+
+	return 0;
 }
 
 void idle()

@@ -5,8 +5,8 @@
 #include <GL/glut.h>
 #include "DualTouch.h"
 
-const short IntialSize = 660;
-const short IntialPosition = 100;
+const short IntialSize = 650;
+const short IntialPosition = 50;
 const short IntialMargin = 14;
 const short Margin = 10;
 

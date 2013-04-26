@@ -52,6 +52,7 @@ Renderer::Renderer(void)
 	m_text = new std::string(" Hello ");
 	m_oultines =true;
 	m_shapecaches.clear();
+	m_repaire = 0;
 }
 
 Renderer::~Renderer(void)
@@ -66,7 +67,7 @@ Renderer::~Renderer(void)
 	for(unsigned int i=0;i<m_objects.size();i++)
 		delete m_objects[i];
 
-	m_objects.clear();
+	m_objects.clear();	
 
 	glDeleteTextures(1,(const GLuint*) &m_texturehandle);
 }
@@ -140,7 +141,7 @@ void Renderer::init()
 	glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS,0);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,m_matDiffuse);
 
-	short size = 64;
+	/*short size = 64;
 	short hsize = size/2;
 	GLubyte * image=new GLubyte[size*size*3];
 	for(int y=0;y<size;y++)
@@ -186,7 +187,7 @@ void Renderer::init()
 			pi[2]=b;
 			pi+=3;
 		}
-	}
+	}*/
 
 	 /*
 	glGenTextures(1,(GLuint*)&m_texturehandle);
@@ -198,7 +199,7 @@ void Renderer::init()
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
 	gluBuild2DMipmaps(GL_TEXTURE_2D,3,size,size,GL_RGB,GL_UNSIGNED_BYTE,image);*/
 						
-	delete[] image;
+	//delete[] image;
 	//glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,m_matDiffuse);
 	//glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,m_matAmbient);
 }
@@ -210,17 +211,25 @@ void Renderer::display()
 	
 	drawSky();
 
+	distanceLine(&btVector3(-5,m_repaire,0.01),(int)(m_repaire + 4), 0.5);
+
+	distanceLine(&btVector3(0,m_repaire,0.01),(int)(m_repaire + 4), 0.5);
+
+	distanceLine(&btVector3(5,m_repaire,0.01),(int)(m_repaire + 4), 0.5);
+
 	// show trajectory if object thrown
 	renderTrajectory();
 
 	glLightfv(GL_LIGHT0, GL_POSITION, m_lightPos);
-	
+
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
 	renderScene();
 	
+	
+
 	//computing shadows mask
-	glDisable(GL_LIGHTING);
+	/*glDisable(GL_LIGHTING);
 	glDepthMask(GL_FALSE);
 	glDepthFunc(GL_LEQUAL);
 	glEnable(GL_STENCIL_TEST);
@@ -278,7 +287,7 @@ void Renderer::display()
 	glDepthFunc(GL_LESS);
 	glDisable(GL_STENCIL_TEST);
 	glDisable(GL_CULL_FACE);		
-	
+	*/
 	infoGame();	
 	//glutSwapBuffers();
 }
@@ -286,25 +295,8 @@ void Renderer::display()
 
 void Renderer::renderScene()
 { 
-	/*
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-	glScalef(0.025f,0.025f,0.025f);
-	glMatrixMode(GL_MODELVIEW);
-
-	static const GLfloat	planex[]={1,0,0,0};
-//	static const GLfloat	planey[]={0,1,0,0};
-	static const GLfloat	planez[]={0,0,1,0};
-	glTexGenfv(GL_S,GL_OBJECT_PLANE,planex);
-	glTexGenfv(GL_T,GL_OBJECT_PLANE,planez);
-	glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_OBJECT_LINEAR);
-	glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_OBJECT_LINEAR);
-	glEnable(GL_TEXTURE_GEN_S);
-	glEnable(GL_TEXTURE_GEN_T);
-	glEnable(GL_TEXTURE_GEN_R);*/
-
-
-	//glPushMatrix();
+	
+	
 	//glEnable(GL_COLOR_MATERIAL);
 
 	
@@ -350,10 +342,10 @@ void Renderer::renderScene()
 					switch (upIndex)
 					{
 					case 0:
-						glRotatef(90.0, 0.0, 1.0, 0.0);
+						//glRotatef(90.0, 0.0, 1.0, 0.0);
 						break;
 					case 1:
-						glRotatef(-90.0, 1.0, 0.0, 0.0);
+						//glRotatef(-90.0, 1.0, 0.0, 0.0);
 						break;
 					case 2:
 						break;
@@ -363,12 +355,48 @@ void Renderer::renderScene()
 					};
 
 					btScalar m[16];
-					m_objects[i]->m_transform->getOpenGLMatrix(m);
+
+					btScalar mat[16];
+
+					btTransform myTrans = btTransform(*(m_objects[i]->m_transform));
+
+					btVector3 trans = myTrans.getOrigin();					
+
+					btQuaternion rot = myTrans.getRotation();						
+
+					myTrans.setOrigin(btVector3(0,0,0));
+
+					btTransform myNewTrans = btTransform(myTrans);	
+
+					myNewTrans.setRotation(rot);
+
+					myNewTrans.getOpenGLMatrix(mat);
+
+					
+					//rot.normalize();
+
+					myTrans.getOpenGLMatrix(m);
 
 					glPushMatrix();
 
+						glTranslatef(trans.x(),trans.y(),0);
+
+						glPushMatrix();    
+						    
+							glTranslatef(0.0, -0.5f*height , 0.0);
+
+							glMultMatrixf(mat);		
+
+							//coneShadow(radius,height);
+	
+						glPopMatrix();
+
+						glTranslatef(0,0,trans.z());						
+
 						glMultMatrixf(m);
+
 						glTranslatef(0.0, 0.0, -0.5f*height);
+
 						drawCone(radius,height);
 				
 					glPopMatrix();
@@ -401,14 +429,32 @@ void Renderer::renderScene()
 					btScalar radius = sphereShape->getRadius();
 
 					btScalar m[16];
-					m_objects[i]->m_transform->getOpenGLMatrix(m);
+					//m_objects[i]->m_transform->getOpenGLMatrix(m);
+
+					btTransform myTrans = btTransform(*(m_objects[i]->m_transform));
+
+					btVector3 trans = myTrans.getOrigin();
+
+					myTrans.setOrigin(btVector3(0,0,0));
+
+					myTrans.getOpenGLMatrix(m);
 
 					glPushMatrix();
-					glMultMatrixf(m);
 
-					drawSphere(radius);
+					glTranslatef(trans.x(),trans.y(),0);
+
+					sphereShadow(radius);
+
+					glTranslatef(0,0,trans.z());
+
+					selectedSphere(radius,m_objects[i]->m_show);
+
+					glMultMatrixf(m);				
+
+					drawSphere(radius);	
 
 					glPopMatrix();
+
 					break;
 				}			
 			}
@@ -508,6 +554,26 @@ void Renderer::drawCone(const btScalar & radius , const btScalar & height)
 	gluDeleteQuadric(quadObj);
 }
 
+void Renderer::coneShadow(const btScalar & radius , const btScalar & height){
+	int slices = 26;
+	glDisable(GL_LIGHTING);
+	//circle(radius,false,true);
+	//glutSolidCone(radius,height,slices,2);	
+
+	glBegin(GL_LINE_LOOP);
+			for(int k = 0; k < 90; k+=1){
+				GLfloat angle = 2 * PI * k / 180;
+				GLfloat x = radius*cos((double)-angle);
+				GLfloat y = radius*sin((double)-angle);
+				glVertex3f(0,0,height);
+				glVertex2f(x,y);
+				glVertex3f(0,0,0);
+			}
+	 glEnd();
+
+	glEnable(GL_LIGHTING);
+}
+
 void Renderer::drawCylinder(const btScalar & radius,const btScalar & halfHeight,int upAxis)
 {
 
@@ -585,7 +651,7 @@ void Renderer::drawCylinder(const btScalar & radius,const btScalar & halfHeight,
 
 void Renderer::drawSphere(const btScalar & radius)
 {
-	GLUquadricObj *quad = gluNewQuadric();
+	
 	if(m_oultines)
 	{
 		// Outlines
@@ -593,8 +659,7 @@ void Renderer::drawSphere(const btScalar & radius)
 		glCullFace (GL_FRONT);				
 		glPolygonMode (GL_BACK, GL_LINE);	
 		glColor3fv(m_wireColor);
-	
-		gluSphere(quad,radius,20,10);
+		
 		glutSolidSphere(radius,20,13);		
 	}
 
@@ -602,9 +667,91 @@ void Renderer::drawSphere(const btScalar & radius)
 	glCullFace (GL_BACK);				// Reset The Face To Be Culled
 	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);		// Reset Back-Facing Polygon Drawing Mode
 	glutSolidSphere(radius,20,10);
-	gluSphere(quad,radius,20,10);
-	gluDeleteQuadric(quad);
 	
+}
+
+void Renderer::selectedSphere(const btScalar & radius, bool show){
+	if(show)
+	{		
+		glDisable(GL_LIGHTING);
+		//glCullFace (GL_FRONT);				
+		//glPolygonMode (GL_BACK, GL_LINE);	
+		glColor3fv(green);
+		//x = r*cos(theta)
+		//y = r*sin(theta)
+		//glutWireSphere(radius+0.1,20,13);
+		GLfloat r = radius + 0.1;
+		glLineWidth(0.2);
+		circle(r,true,false);
+	    glEnable(GL_LIGHTING);
+	}
+}
+
+void Renderer::sphereShadow(const btScalar & radius){
+	glDisable(GL_LIGHTING);
+	glLineWidth(0.1);
+	glColor3fv(black);
+	GLfloat r = radius - 0.1;
+	circle(r,false,true);
+	glEnable(GL_LIGHTING);
+}
+
+void Renderer::circle(GLfloat radius,bool axeZ,bool Fill){
+	if(axeZ){
+	    glBegin(GL_LINE_LOOP);
+			for(int k = 0; k < 360; k+=1){
+				GLfloat x = radius*cos((double)k);
+				GLfloat z = radius*sin((double)k);
+				glVertex3f(x,0,z);
+				if(Fill)
+					glVertex3f(0,0,0);
+			}
+		 glEnd();
+	}else{
+		 glBegin(GL_LINE_LOOP);
+			for(int k = 0; k < 360; k+=1){
+				GLfloat x = radius*cos((double)k);
+				GLfloat y = radius*sin((double)k);
+				glVertex2f(x,y);
+				if(Fill)
+					glVertex3f(0,0,0);
+			}
+		glEnd();
+	}
+}
+
+
+void Renderer::distanceLine(btVector3* start, int stop,GLfloat size){
+
+	if(stop < 1)
+		return;
+	GLfloat x = start->x();	
+	GLfloat y = start->y();	
+	GLfloat z = start->z();	
+
+	glDisable(GL_LIGHTING);
+
+	glColor3fv(light_Grey);
+
+	for(int i = 0; i<stop; i++){
+
+		if(i % 2 == 0){
+			glBegin(GL_QUADS);			    
+				glVertex3f(x,y,z);
+				glVertex3f(x+size,y,z);
+				glVertex3f(x+size,y+size,z);
+				glVertex3f(x,y+size,z);
+			glEnd();
+		}
+
+		y--;
+	}
+
+	glEnable(GL_LIGHTING);
+}
+
+void Renderer::setRepaire(int r){
+	m_repaire = r;
 }
 
 void Renderer::drawShadow(const btCollisionShape* shape,const btVector3 &extrusion)
@@ -692,11 +839,14 @@ void Renderer::drawSky()
 	glColor3f(m_clearColor[0],m_clearColor[1],m_clearColor[2]);
 	glDisable(GL_LIGHTING);
 	glutSolidCube(1000);
+	glEnable(GL_LIGHTING);
 }
 
 void Renderer::renderTrajectory(){
-	glColor3f(0.0,0.8,0.0);
+	glDisable(GL_LIGHTING);
+	glColor3f(0.2,0.2,0.2);
 
+	glLineWidth(0.8);
 	for (int j = 0; j < ThronNumber;j++)			
 		if(m_points[j].size()>0){			
 			for(unsigned int i =0 ;i< (m_points[j].size());i++){				
@@ -799,33 +949,30 @@ void Renderer::setText(std::string* text){
 
 
 void Renderer::infoGame(){
-		
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,black);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,black);
-	
+
+	glDisable(GL_LIGHTING);	
+
+	glColor3fv(black);
 
 	printText(); 
 
-	glEnter2D();
-	glWrite(10, glGetViewportHeight() - 10, GLUT_BITMAP_HELVETICA_12, &(std::string(" Rules : ")));
+	glEnter2D();	
 
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,red);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,red);
+	glWrite(10, glGetViewportHeight() - 20, GLUT_BITMAP_HELVETICA_12, &(std::string(" Points par couleur : ")));	
 
-	glWrite(15, glGetViewportHeight() - 25, GLUT_BITMAP_HELVETICA_10, &(std::string(" Red ==> 20 :) ")));
+	glColor3fv(red);
 
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,blue);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,blue);
+	glWrite(15, glGetViewportHeight() - 45, GLUT_BITMAP_HELVETICA_12, &(std::string(" Rouge    ==>  20  ")));
 
-	glWrite(15, glGetViewportHeight() - 40, GLUT_BITMAP_HELVETICA_10, &(std::string(" blue ==> 10 :] ")));
+	glColor3fv(light_blue);
 
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,yellow);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,yellow);
+	glWrite(15, glGetViewportHeight() - 60, GLUT_BITMAP_HELVETICA_12, &(std::string(" Bleu      ==>  10  ")));
 
-	glWrite(15, glGetViewportHeight() - 55, GLUT_BITMAP_HELVETICA_10, &(std::string(" yellow ==> -10 X( ")));
+	glColor3fv(yellow);
+	 
+	glWrite(15, glGetViewportHeight() - 75, GLUT_BITMAP_HELVETICA_12, &(std::string(" Jaune    ==> -10  ")));
 
 	glLeave2D();
 
-	
-			
+	glEnable(GL_LIGHTING);				
 }

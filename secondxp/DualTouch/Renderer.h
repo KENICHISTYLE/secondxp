@@ -9,6 +9,7 @@
 #include "BulletCollision/CollisionShapes/btShapeHull.h"
 
 #define FLT_2_PI 6.283185307f
+#define PI 3.14
 const GLfloat black[3] = {0.1,0.1,0.1};
 
 class Renderer
@@ -48,6 +49,14 @@ public:
 	void setPoints(std::vector<btVector3*>* points, int index);
 	void infoGame();
 	void clearPoints();
+	void selectedSphere(const btScalar & radius,bool show);
+
+	void circle(GLfloat radius,bool axeZ,bool Fill);
+	void sphereShadow(const btScalar & radius);
+	void coneShadow(const btScalar & radius , const btScalar & height);
+
+	void distanceLine(btVector3* start, int stop, GLfloat);
+	void setRepaire(int r);
 private:
 
 	//GL_ShapeDrawer m_shapedrawer; 
@@ -71,5 +80,5 @@ private:
 	GLfloat m_matAmbient[4];
 	bool m_oultines;
 	std::string* m_text;
-
+	GLfloat m_repaire;
 };

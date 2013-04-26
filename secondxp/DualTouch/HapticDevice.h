@@ -14,7 +14,7 @@
 
 #pragma once
 
-#define STIFFNESS 0.10
+#define STIFFNESS 0.20
 #define EPSILON 0.00001 /* zero, for purposes of calculating distances. */
 #define SCALE_DEVICE_TO_WORLD 0.1f /* scaling distance */
 #define SCALE_WORLD_TO_DEVICE 1.0f/SCALE_DEVICE_TO_WORLD /* scaling distance */
@@ -28,12 +28,14 @@
 #define MNDISTANCE -MXDISTANCE
 #define VARIATION_MAX 0.25
 
-const btScalar Time = 100 ;
+
 const HDdouble Quick_Dicplacement = 40;
-const HDdouble Distance_max = 8.0;
-const HDdouble Quick_Distance_max = 30.0;
-const HDdouble Slow_Distance_max = 20.0;
-const int Nbr_factor = 3;
+const HDdouble Distance_max = 5.0;
+const HDdouble Quick_Distance_max = 40.0;
+const HDdouble Slow_Distance_max = 25.0;
+const int Nbr_factor = 10;
+const int Nbr_previous = 1;
+
 class HapticData
 {
 	public:
@@ -148,6 +150,10 @@ public:
 	static bool inrange(HDdouble x,HDdouble y,HDdouble z);
 	void setGround(btRigidBody* ground);
 
+	void addPrevious(btRigidBody* target);
+	bool checkPrevious();
+	void cleanHistory();
+
 private:
 
 	std::string m_name;
@@ -164,6 +170,7 @@ private:
 	Object* m_ThrownObject;
 	btRigidBody* m_Thrown;
 	btRigidBody* m_caught;
+	btRigidBody* m_previous;
 	std::vector <Object *>* m_thrownObjects;
 	std::vector <btRigidBody *>* m_thrownRigids;
 	std::vector <btVector3*> m_trajectory[ThronNumber];
@@ -175,8 +182,11 @@ private:
 	bool m_devine;
 	int m_sible;
 	HDdouble m_lastFactor[Nbr_factor];
+	bool m_lastSelected[Nbr_previous];
 	int m_factor_index;
+	int m_selected_index;
 	hduVector3Dd m_Force;
+	hduVector3Dd m_predForce;
 	HDdouble m_selectedDistance;
 	btRigidBody* m_ground;	
 };

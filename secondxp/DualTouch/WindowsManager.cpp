@@ -23,10 +23,11 @@ void WindowsManager::createWindows(int argc, char** argv)
 	glutInit(&argc, argv); 
 	glutInitDisplayMode(GLUT_MULTISAMPLE | GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
 
-	if(m_subWindow)
-		glutInitWindowSize(m_width*2,IntialSize); 
-	else
-		glutInitWindowSize(m_width,m_height); 
+	//if(m_subWindow)
+	//	glutInitWindowSize(m_width*2,IntialSize); 
+	//else
+
+	glutInitWindowSize(m_width,m_height); 
 
 	m_window1 = glutCreateWindow("Haptic launch"); 
 	glutPositionWindow(IntialPosition,IntialPosition); 
@@ -41,7 +42,8 @@ void WindowsManager::createWindows(int argc, char** argv)
 	glutMotionFunc(m_motion1);
 	glutEntryFunc(m_entry1);
 
-	/*glutInitWindowSize(IntialSize,IntialSize); 
+	/*
+	glutInitWindowSize(IntialSize,IntialSize); 
 	m_window2 = glutCreateWindow("Dual Touch 2"); 
 	glutPositionWindow(IntialPosition+IntialSize+IntialMargin,IntialPosition); 
 
@@ -61,13 +63,21 @@ void WindowsManager::createWindows(int argc, char** argv)
 	glutIdleFunc(m_idle);
 	glutMainLoop(); 
 	
+	int i =0;
 }
 
 
 void WindowsManager::toggleFullScreen()
 {
-	m_fullScreen = ! m_fullScreen;
-	setFullScreen(m_fullScreen);
+	m_fullScreen = !m_fullScreen;
+	if(m_fullScreen)
+		glutFullScreen();
+	else{
+		//setCurrentWindow(0);
+		glutPositionWindow(IntialPosition,IntialPosition); 
+		glutReshapeWindow(IntialSize * 14/9, IntialSize);			
+	}
+	//setFullScreen(m_fullScreen);
 }
 
 void WindowsManager::setFullScreen(bool enable)
@@ -141,8 +151,8 @@ void WindowsManager::setFullScreen(bool enable)
 
 void WindowsManager::toggleSubWindow()
 {
-	m_subWindow = !m_subWindow;
-	setSubWindow(m_subWindow);
+	//m_subWindow = !m_subWindow;
+	//setSubWindow(m_subWindow);
 }
 
 void WindowsManager::setSubWindow(bool enable)
@@ -177,10 +187,10 @@ void WindowsManager::setSubWindow(bool enable)
 
 void WindowsManager::setCurrentWindow(int window)
 {
-	if(window==0)
-		glutSetWindow(m_window1);
-	else
-		glutSetWindow(m_window2);
+	//if(window==0)
+	//	glutSetWindow(m_window1);
+	//else
+	//	glutSetWindow(m_window2);
 }
 
 // callback function called by EnumDisplayMonitors for each enabled monitor
@@ -278,8 +288,7 @@ void WindowsManager::idle2(int value)
 	glutTimerFunc(0,m_idle2,value);
 }
 void WindowsManager::keyboard1(unsigned char key, int x, int y)
-{
-	keyboardAll(key);
+{	
 	if(m_subWindow)
 	{
 		if(x>m_width/2)
@@ -295,12 +304,14 @@ void WindowsManager::keyboard1(unsigned char key, int x, int y)
 	}
 	else
 		m_dt.keyboard1(key, x, y); 
+
+	keyboardAll(key);
 }
 
 void WindowsManager::keyboard2(unsigned char key, int x, int y)
 {
-	keyboardAll(key);
-	m_dt.keyboard2(key, x, y); 
+	//keyboardAll(key);
+	//m_dt.keyboard2(key, x, y); 
 }
 
 void WindowsManager::keyboardAll(unsigned char key)
@@ -316,7 +327,7 @@ void WindowsManager::keyboardAll(unsigned char key)
 	case(' '):	m_dt.reset();
 				break;
 	case(27):	//glutDestroyWindow(m_window2);//Escape			
-				//glutDestroyWindow(m_window1);
+				//glutDestroyWindow(0);
 				//exit(0);
 				break;
 	}

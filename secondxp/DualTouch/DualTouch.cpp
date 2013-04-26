@@ -21,7 +21,7 @@ void DualTouch::init1()
 	m_theta = 45;
 	m_lunch_z = 3.5;
 	m_lunch_y = 30;
-	m_time = 0;	
+	m_time = time(NULL);	
 	m_catchs = 0;
 	m_lancerNbr = 0;
 	m_note = "";
@@ -30,6 +30,7 @@ void DualTouch::init1()
 	m_feed = true;
 	//m_leftToTrhow = ThronNumber;
 	m_renderer.init();
+	m_renderer.setRepaire(m_lunch_y);
 	m_physic.init();
 	m_log.init();
 	m_camera1.moveTo(btVector3(0.5,-10,3));
@@ -92,7 +93,7 @@ void DualTouch::addLauncher(){
 
 	btCollisionShape * shape = new btBoxShape (btVector3(hx+hx,hy,40));
 	
-	btRigidBody * body = m_physic.addRigidBody(20,t,shape);
+	btRigidBody * body = m_physic.addRigidBody(0,t,shape);
 	m_renderer.addObject(new Object(shape,t,orange));
 
 	body->setCollisionFlags( body->getCollisionFlags() | 
@@ -203,15 +204,15 @@ void DualTouch::throwMultiObject(btScalar Onumber, float canonPos, int index){
 		
 		for(unsigned int i = 0;i<Onumber;i++)
 		{			  
-		  int f = (rand() % 10) + 0.1;
+		  int f = (rand() % 100) + 0.1;
 		  int initial_x;
 		  if (index % 2 == 0){
-			initial_x = f/100;
+			initial_x = (f/1000) -0.05;
 			t = new btTransform(btQuaternion(),targetpos1); 
 			m_throwed_x.push_back(canonPos+dec);		
 			
 		  }else{
-			initial_x= -f/100;
+			initial_x= (-f/1000) +0.05;
 			t = new btTransform(btQuaternion(),targetpos2);
 			m_throwed_x.push_back(canonPos-dec);		
 			
@@ -273,7 +274,7 @@ void DualTouch::getFinalPos(btTransform* target,int targetIndex, btScalar vx,  b
 	btScalar z = 0;
 	btScalar x = 0;
 	btVector3* p;
-	while(y>m_impactY - m_lunch_y && j< 250){
+	while(y>m_impactY - m_lunch_y && j< 150){
 		++i;
 		y = m_velocityY * cos(m_theta) * time;
 		y = m_lunch_y - y;
@@ -461,16 +462,16 @@ void DualTouch::evaluateScore(){
 		m_catchs++;
 		//cout << " index " << index  << " val " << m_goodToCatch[index] << " catch " << m_catchs << " lanced " << m_lancerNbr << endl;
     m_note = "";
-	if( m_score >= 100)
-		m_note = " Awesome :)";
+	if( m_score >= 200)
+		m_note = " Genial !!!! ";
 	//cout << " index " << index  << " val " << m_goodToCatch[index] << endl;
 }
 
 void DualTouch::waitFeadBack(){	
 	if(m_hds.isReadyLaunch()){
-		//m_log.printElepsedTime();		
-		deleteThrowedObjects();
-		m_time = 0;		
+		//m_log.printElepsedTime();
+		m_time = time(NULL);
+		deleteThrowedObjects();			
 		for (int i=0; i<canonNbr; i++) { // shuffle
 			int r = i + (rand() % ( canonNbr - i)); 
 		    int temp = m_CanonPos[i];
@@ -504,12 +505,18 @@ void DualTouch::waitFeadBack(){
 		setAfterColideCoord();
 
 	// timed launch
-	if(!m_hds.isCaught())
-		if(m_time >= Time){
-			m_time = 0;					
+	time_t now = time(NULL);
+    time_t time = now - m_time;
+
+	if(!m_hds.isCaught()){
+		if(time > Time){
+			m_time = now;					
 			m_hds.Lunch();
 			m_hds.deactivateMove();
-		}else m_time++;	
+		}
+
+	}else
+		m_time = now ;	
 
 	if(m_hds.isCaught() && m_eval){
 	    m_eval = false;
@@ -517,13 +524,13 @@ void DualTouch::waitFeadBack(){
 	}
 
 	ostringstream oss;
-	oss << (int) (Time - m_time)/25;
+	oss << (int) (Time - time);
 	string* s = new string();
-	*s = " Time left before throw ... " + oss.str() + "  ! " ;
+	*s = " Temps restant avant lancer ... " + oss.str() + " secondes  ! " ;
 	oss.str("");	
 	if(m_score > 0){
 		oss << m_score;
-		*s += " Current score : " + oss.str() + ". " + m_note;
+		*s += " Votre score : " + oss.str() + ". " + m_note;
 	}
 
 	m_renderer.setText(s);

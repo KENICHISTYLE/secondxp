@@ -12,10 +12,8 @@ HapticDevice::HapticDevice()
 	}
 	m_nbDevices = 0;
 	m_coll = false;	
-	m_factor_index = 0;
-	for(int k = 0;k<Nbr_factor;k++)
-		m_lastFactor[k] = 0;
-	    
+
+	cleanHistory();
 	//m_time = 0;
 }
 
@@ -344,7 +342,7 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 		if((m_hss[i].m_free.m_buttons & HD_DEVICE_BUTTON_1) != 0 )// (m_hss[i].m_free.m_buttons & HD_DEVICE_BUTTON_2))
 		{
 			m_hss[i].m_free.m_done = true;	
-			m_hss[i].m_free.m_force = hduVector3Dd(0,0.1,0);
+			m_hss[i].m_free.m_force = hduVector3Dd(0,0,0);
 		}		
 		
 		if(m_constraints[i] != NULL)
@@ -468,15 +466,15 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 			//	//deactivateMove();
 			//	//distanceMax = Slow_Distance_max; 
 			//}
-			m_hss[i].m_free.m_force = hduVector3Dd(0,0.1,0);
-			HDdouble selectedDistance = 0;
 			
+			HDdouble selectedDistance = 0;
+			m_hss[i].m_free.m_force = hduVector3Dd(0,0,0);
 			if( m_Feedback && m_devine && m_thrownRigids != NULL && m_thrownRigids->size()>0 && deplacement > distanceMax && m_sible == 0 /* && !m_targetChoosen */){
 				//btTransform trans;				
 				//hduVector3Dd line = trajectoryLine(m_hss[i].m_free.m_position, m_hss[i].m_free.m_oldPosition);
-				HDdouble distance = Quick_Distance_max;
+				HDdouble distance = Slow_Distance_max;
 				if(move.magnitude() >= Quick_Dicplacement)
-						distance = Slow_Distance_max;
+					distance = Quick_Distance_max;
 				//unsigned int targ = 0;
 				for(unsigned int j = 0; j<m_thrownRigids->size(); j++){
 					//trans = (*m_thrownRigids)[j]->getWorldTransform();
@@ -513,8 +511,10 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 						}
 					
 				}
-				if(m_targetChoosen)
+				if(m_targetChoosen){
 					showTarget(m_Thrown);
+					addPrevious(m_Thrown);
+				}
 				else
 					m_sible = 0;
 				//m_time = Time;
@@ -526,6 +526,7 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 				m_sible = 0;
 				m_devine = true;
 				deactivateMove();
+				cleanHistory();
 				m_hss[i].m_free.m_atThrowPos = m_hss[i].m_free.m_position;
 			}
 			m_hss[i].m_free.m_oldPosition = m_hss[i].m_free.m_position ;
@@ -544,9 +545,11 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 
 						if(!helpForce.isZero(EPSILON)){						 	    
 							
-							    m_hss[i].m_free.m_force = 0.7 * helpForce;
-								m_Force = helpForce;							
-						
+							hduVector3Dd force = 0.8 * helpForce;												
+
+							m_hss[i].m_free.m_force = force;
+							m_Force = force;	
+
 						}else 
 							{
 							m_hss[i].m_free.m_force = m_Force;							
@@ -680,10 +683,13 @@ void HapticDevice::showTarget(btRigidBody* target){
 		for(unsigned int i= 0 ;i< m_thrownObjects->size();i++)
 			{				
 				if((*m_thrownObjects)[i]->getshape() == target->getCollisionShape()){
-					(*m_thrownObjects)[i]->setColor(green);
+					//(*m_thrownObjects)[i]->setColor(green);
 					m_ThrownObject = (*m_thrownObjects)[i];
-				}else
-					(*m_thrownObjects)[i]->setColor(light_Grey);
+					m_ThrownObject->setShow(true);
+				}else{
+					//(*m_thrownObjects)[i]->setColor(light_Grey);
+					(*m_thrownObjects)[i]->setShow(false);
+				}
 			};
 	
 
@@ -753,17 +759,20 @@ hduVector3Dd HapticDevice::ComputeForce(hduVector3Dd* effector, hduVector3Dd* ta
 hduVector3Dd HapticDevice::ForceToImpact(hduVector3Dd* effector,hduVector3Dd* impactpos){
 	    // use Yamada and al force model
 		hduVector3Dd inbetween = *impactpos - *effector ;
-		hduVector3Dd force = hduVector3Dd(0.0,0.3,0.0);
+		hduVector3Dd force = hduVector3Dd(0,0.1,0.0);
 		HDdouble phi = 2.5;
 		HDdouble sigma = 0.091;
+
+		HDdouble div = 1.0;
 
 		HDdouble s2 = pow(sigma, 2);
 
 		HDdouble x = inbetween.magnitude();
 						
-		HDdouble f = phi * sqrt( x/ s2 ) * std::exp((s2 - pow(x,2))/4*s2);
-		
-		inbetween.normalize();
+		HDdouble f = phi * ( x/ s2 ) * std::exp((s2 - pow(x,2))/2*s2);		
+
+		inbetween.normalize();		
+
 		HDdouble some =0;
 		int l = 0;
 		for(int k = 0;k<Nbr_factor;k++){
@@ -774,16 +783,59 @@ hduVector3Dd HapticDevice::ForceToImpact(hduVector3Dd* effector,hduVector3Dd* im
 	    	}
 				
 		f = (some + f)/ (l+1);
-		if(f >= 1 )
-			force +=  (1 - (1/f)) * inbetween;
-		else
-			force +=  0.01 * inbetween;
-		//std::cout<< " f " << f  << " " << force[0] << "  " << force[1] << " " << force[2] << std::endl;
-		
+
+		if(f >= div && (x > 4 )){
+			force +=  (div - (div/f)) * inbetween;
+			//std::cout<< " if " << std::endl;
+		}else{//std::cout<< " else " << std::endl;
+			force += 0.2 * (inbetween + m_predForce);
+		}
+		//if(checkPrevious())
+		//	force +=  0.03 * inbetween;
+
+		//std::cout<< " x " << x << " f " << f  << " " << force[0] << "  " << force[1] << " " << force[2] << std::endl;
+		//std::cout<<" " << inbetween[0] << "  " << inbetween[1] << " " << inbetween[2] << std::endl;
 
 		m_lastFactor[m_factor_index] = f;		
 		m_factor_index = (m_factor_index + 1) % Nbr_factor;
+		m_predForce = force;
+		
 	return force ;
+}
+
+
+void HapticDevice::cleanHistory(){
+
+	m_factor_index = 0;
+	m_selected_index = 0;
+	m_predForce.set(0.0,0.0,0.0);
+
+	for(int k = 0;k<Nbr_factor;k++)
+		m_lastFactor[k] = 0;
+
+	for(int k = 0;k<Nbr_previous;k++)
+		m_lastSelected[k] = false;
+
+	m_previous = NULL;
+}
+void HapticDevice::addPrevious(btRigidBody* target){
+	if(m_previous != NULL){
+		if(m_previous == target)
+			m_lastSelected[m_selected_index] = true;
+
+		m_selected_index = (m_selected_index + 1) % Nbr_previous;
+	}
+	m_previous = target;
+}
+
+bool HapticDevice::checkPrevious(){
+	int count =0;
+
+	for(int k = 0;k<Nbr_previous;k++)
+		if(m_lastSelected[k] == false)
+			count++;
+	
+	return (count < Nbr_previous/2);
 }
 
 void HapticDevice::setImpactPos(btVector3* pos){
@@ -832,6 +884,8 @@ void HapticDevice::setPossibleImpactPoints(btVector3* impact){
 void HapticDevice::clearPossibleImpactPoints(){
 	m_possibleImpact.clear();	
 }
+
+
 
 void HapticDevice::setTrajectory(std::vector<btVector3*>* points, int index,unsigned int stop){
 	//std::cout << stop << std::endl;
