@@ -13,7 +13,7 @@ const btScalar Ball_Size = 0.3;
 const btScalar Effector_Mass = 4;
 const btScalar Effector_Size = 0.08f;
 const btScalar m_timeSpeed = 0.01;
-const int canonNbr = 6;
+const int canonNbr = 20;
 const float Gut_vz = 5.0f;
 const float Gut_vy = 13.2f;
 const double Time = 10 ;
@@ -112,4 +112,5 @@ public:
 	bool m_eval;
 	bool m_withTraj;
 	bool m_feed;
+	Object* m_effObj;
 };

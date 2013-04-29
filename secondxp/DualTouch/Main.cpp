@@ -56,6 +56,7 @@ int main(int argc, char** argv)
 
 	wm.createWindows(argc,argv);
 
+	printf(" Done. ");
 	return 0;
 }
 

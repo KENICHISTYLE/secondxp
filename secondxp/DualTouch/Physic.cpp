@@ -114,7 +114,15 @@ void Physic::delthrown(vector<btRigidBody*>* thrown){
 		}
 		if (body && body->getCollisionShape())
 		{
-			delete body->getCollisionShape();
+			for (int j=0;j<m_collisionShapes.size();j++)
+			{
+				btCollisionShape* shape = m_collisionShapes[j];				
+				if(shape == body->getCollisionShape()){
+					delete body->getCollisionShape();
+					//m_collisionShapes[j] = NULL;
+					m_collisionShapes.remove(shape);
+				}			
+			}			
 		}
 		m_dynamicsWorld->removeRigidBody(body);
 		delete body;
@@ -178,6 +186,7 @@ void Physic::exit()
 
 	delete m_collisionConfiguration;
 
+	printf(" Physic Done . \n");
 }
 
 btRigidBody* Physic::addRigidBody(float mass, btTransform * startTransform, btCollisionShape * shape)
@@ -328,8 +337,6 @@ void Physic::tick()
 		}
 	}
 }
-
-
 
 void Physic::reset()
 {

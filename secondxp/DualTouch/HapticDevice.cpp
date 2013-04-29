@@ -10,9 +10,9 @@ HapticDevice::HapticDevice()
 		m_itsConstraints[i] = NULL;
 		m_oldButtons[i] = HD_INVALID_HANDLE;			
 	}
-	m_nbDevices = 0;
-	m_coll = false;	
 
+	m_nbDevices = 0;
+	m_coll = false;		
 	cleanHistory();
 	//m_time = 0;
 }
@@ -40,6 +40,8 @@ HapticDevice::~HapticDevice(void)
 			}
 		}
 	}
+
+	printf(" Haptic Divice Done . \n");
 }
 
 HDCallbackCode HDCALLBACK HapticDevice::aSchedule(void *pUserData)
@@ -61,7 +63,7 @@ HDCallbackCode HDCALLBACK HapticDevice::aSchedule(void *pUserData)
 			force = data->m_force;
 			/* if we are nearly at the center don't recalculate anything,
 				since the center is a singular point. */
-			if(data->m_nbCollision > 0)
+			if(data->m_nbCollision == 1)
 			{
 				if(distance.magnitude() > EPSILON && data->m_ready)
 				{   
@@ -71,8 +73,11 @@ HDCallbackCode HDCALLBACK HapticDevice::aSchedule(void *pUserData)
 						k = STIFFNESS, and x is the penetration vector from 
 						the actual position to the desired position. */
 
-					force += STIFFNESS*distance;			
+					force.set(0,-0.3,-0.1);
+
+					force += STIFFNESS*distance;						
 					
+					force[0] = 0;
 				} 
 			}
 			
@@ -334,10 +339,30 @@ void HapticDevice::run()
 	}
 }
 
+hduVector3Dd HapticDevice::groundForce(bool collide, hduVector3Dd *effector,btTransform* invertCamera){
+
+	hduVector3Dd force = hduVector3Dd(0,0,0); 
+
+	if(collide){
+
+		btVector3 p = m_ground->getWorldTransform().getOrigin();
+
+		hduVector3Dd ground_pos = invertTransform(&p,invertCamera);
+
+		
+		force[1] = (ground_pos[1] - (*effector)[1]) ;	
+
+		force *= 0.15;
+	}
+
+	return force; 
+}
+
 void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 {
 	for(unsigned int i=0;i<m_nbDevices;i++)
 	{
+		bool ground_collide = false;
 		// free move
 		if((m_hss[i].m_free.m_buttons & HD_DEVICE_BUTTON_1) != 0 )// (m_hss[i].m_free.m_buttons & HD_DEVICE_BUTTON_2))
 		{
@@ -362,6 +387,13 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 				if(object->getInternalType()== btCollisionObject::CO_RIGID_BODY)
 				{
 					btRigidBody * collideBody = static_cast<btRigidBody *>(object);	
+					// collide with ground
+					if(collideBody == m_ground)
+					{
+						m_hss[i].m_free.m_nbCollision = 2;
+						ground_collide = true;
+					}
+					// collide with other object
 					if(collideBody->getInvMass()!=0 && collideBody != m_ground)
 					{
 							if(m_itsConstraints[i] == NULL )
@@ -429,7 +461,7 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 				
 			}
 
-			if(m_itsConstraints[i]!=NULL)
+			if(m_itsConstraints[i]!=NULL )
 				m_hss[i].m_free.m_nbCollision = 1;			
 			else
 				// launch an other target
@@ -452,6 +484,13 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 			}
 			
 			btTransform camInv = m_cameraViews[i]->inverse();
+			// compute feed back for ground
+			if(ground_collide)
+			{
+				m_hss[i].m_free.m_force = groundForce(true,&(m_hss[i].m_free.m_position),&camInv);
+			}else
+				m_hss[i].m_free.m_force = hduVector3Dd(0,0,0);
+
 			// detecte the direction
 			HDdouble deplacement = betweenTwoPoints(m_hss[i].m_free.m_atThrowPos,m_hss[i].m_free.m_position);
 			HDdouble distanceMax = Distance_max;
@@ -468,7 +507,7 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 			//}
 			
 			HDdouble selectedDistance = 0;
-			m_hss[i].m_free.m_force = hduVector3Dd(0,0,0);
+			
 			if( m_Feedback && m_devine && m_thrownRigids != NULL && m_thrownRigids->size()>0 && deplacement > distanceMax && m_sible == 0 /* && !m_targetChoosen */){
 				//btTransform trans;				
 				//hduVector3Dd line = trajectoryLine(m_hss[i].m_free.m_position, m_hss[i].m_free.m_oldPosition);
@@ -504,7 +543,7 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 								m_targetChoosen = true;							
 								activateMove();
 								selectedDistance = d;	
-								m_sible = 6;
+								m_sible = Nbr_frame_wait;
 								//deactivateMove();
 								//targ = i;
 							}
@@ -534,27 +573,28 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 												
 					hduVector3Dd impact = invertTransform(m_impactPos, &camInv);
 					hduVector3Dd pos(m_hss[i].m_free.m_position); 
-					
-					
-					if(!m_hss[i].m_free.m_done){	
-					
-						hduVector3Dd helpForce = ForceToImpact(&pos,&impact);	
-						hduVector3Dd temp = impact - pos; 
-						HDdouble d = temp.magnitude();
-						//std::cout<< " D " << d << std::endl;
 
-						if(!helpForce.isZero(EPSILON)){						 	    
+					btVector3 balltest = ((*m_thrownRigids)[0])->getWorldTransform().getOrigin();
+					hduVector3Dd test = invertTransform(&balltest, &camInv);
+
+					if(pos[2] >= test[2]){
+						if(!m_hss[i].m_free.m_done){	
+					
+							hduVector3Dd helpForce = ForceToImpact(&pos,&impact);	
+						
+							if(!helpForce.isZero(EPSILON)){						 	    
 							
-							hduVector3Dd force = 0.8 * helpForce;												
+								hduVector3Dd force = 1.0 * helpForce;												
 
-							m_hss[i].m_free.m_force = force;
-							m_Force = force;	
+								m_hss[i].m_free.m_force = force;
+								m_Force = force;	
 
-						}else 
-							{
-							m_hss[i].m_free.m_force = m_Force;							
-						    }
+							}else 
+								{
+								m_hss[i].m_free.m_force = m_Force;							
+								}
 				
+						}
 					}
 				
 			}			
@@ -760,45 +800,26 @@ hduVector3Dd HapticDevice::ForceToImpact(hduVector3Dd* effector,hduVector3Dd* im
 	    // use Yamada and al force model
 		hduVector3Dd inbetween = *impactpos - *effector ;
 		hduVector3Dd force = hduVector3Dd(0,0.1,0.0);
-		HDdouble phi = 2.5;
-		HDdouble sigma = 0.091;
+		HDdouble phi = 2.0;
+		HDdouble sigma = 20;//0.091;
 
 		HDdouble div = 1.0;
 
 		HDdouble s2 = pow(sigma, 2);
 
 		HDdouble x = inbetween.magnitude();
-						
-		HDdouble f = phi * ( x/ s2 ) * std::exp((s2 - pow(x,2))/2*s2);		
 
+		HDdouble f = phi * ( pow(x,2)/ s2 ) * std::exp((s2 - pow(x,2))/s2);		
+		
+		//HDdouble f = phi * ( pow(x,2)/ s2 ) * std::exp((s2 - pow(x,2))/s2);		
+
+		//HDdouble f = phi * ( pow(x,2)/ s2 ) * std::exp((s2 - pow(x,2))/s2);	
+		
 		inbetween.normalize();		
-
-		HDdouble some =0;
-		int l = 0;
-		for(int k = 0;k<Nbr_factor;k++){
-				if( m_lastFactor[k] != 0){
-					some += f;
-					++l; 
-				}
-	    	}
-				
-		f = (some + f)/ (l+1);
-
-		if(f >= div && (x > 4 )){
-			force +=  (div - (div/f)) * inbetween;
-			//std::cout<< " if " << std::endl;
-		}else{//std::cout<< " else " << std::endl;
-			force += 0.2 * (inbetween + m_predForce);
-		}
-		//if(checkPrevious())
-		//	force +=  0.03 * inbetween;
-
-		//std::cout<< " x " << x << " f " << f  << " " << force[0] << "  " << force[1] << " " << force[2] << std::endl;
-		//std::cout<<" " << inbetween[0] << "  " << inbetween[1] << " " << inbetween[2] << std::endl;
-
-		m_lastFactor[m_factor_index] = f;		
-		m_factor_index = (m_factor_index + 1) % Nbr_factor;
-		m_predForce = force;
+		
+		
+		force +=  f * inbetween;
+			
 		
 	return force ;
 }

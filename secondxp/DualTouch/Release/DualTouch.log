@@ -1,16 +1,31 @@
-﻿La génération a démarré 29/03/2013 15:35:18.
+﻿La génération a démarré 29/04/2013 19:43:15.
      1>Projet "C:\Users\amghar\Documents\Visual Studio 2010\Projects\secondxp\secondxp\DualTouch\DualTouch.vcxproj" sur le nœud 2 (build cible(s)).
      1>InitializeBuildStatus:
          Création de "Release\Multi target.unsuccessfulbuild", car "AlwaysCreate" a été spécifié.
        ClCompile:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\sdk\bullet-2.78\src" /I"C:\sdk\freeglut-2.6.0\include" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D USE_PARALLEL_DISPATCHER /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt DualTouch.cpp
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\sdk\bullet-2.78\src" /I"C:\sdk\freeglut-2.6.0\include" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D USE_PARALLEL_DISPATCHER /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Camera.cpp DualTouch.cpp HapticDevice.cpp Renderer.cpp WindowsManager.cpp
+         Camera.cpp
+         Note: including lib: glut32.lib
+         
          DualTouch.cpp
+         Note: including lib: glut32.lib
+         
+         HapticDevice.cpp
+     1>HapticDevice.cpp(562): warning C4305: '=' : troncation de 'double' à 'btScalar'
+     1>HapticDevice.cpp(897): warning C4018: '<' : incompatibilité signed/unsigned
+     1>HapticDevice.cpp(927): warning C4018: '<' : incompatibilité signed/unsigned
+         Renderer.cpp
+         Note: including lib: glut32.lib
+         
+     1>Renderer.cpp(934): warning C4018: '<' : incompatibilité signed/unsigned
+         WindowsManager.cpp
          Note: including lib: glut32.lib
          
        Link:
          C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\amghar\Documents\Visual Studio 2010\Projects\secondxp\secondxp\Release\Multi target.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\Program Files\SensAble\3DTouch\utilities\lib\Win32\Release" /LIBPATH:"C:\Program Files\SensAble\3DTouch\lib\win32" /LIBPATH:"C:\sdk\bullet-2.81-rev2613\bullet-2.81-rev2613\Glut" /LIBPATH:"C:\sdk\bullet-2.81-rev2613\bullet-2.81-rev2613\lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt.lib /MANIFEST /ManifestFile:"Release\Multi target.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\amghar\Documents\Visual Studio 2010\Projects\secondxp\secondxp\Release\Multi target.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\amghar\Documents\Visual Studio 2010\Projects\secondxp\secondxp\Release\Multi target.lib" /MACHINE:X86 Release\Camera.obj
          Release\DualTouch.obj
          Release\HapticDevice.obj
+         Release\Logger.obj
          Release\Main.obj
          Release\Object.obj
          Release\Physic.obj
@@ -29,4 +44,4 @@
 
 La génération a réussi.
 
-Temps écoulé 00:00:05.77
+Temps écoulé 00:00:10.02

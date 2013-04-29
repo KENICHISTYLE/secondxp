@@ -14,7 +14,7 @@
 
 #pragma once
 
-#define STIFFNESS 0.20
+#define STIFFNESS 0.25
 #define EPSILON 0.00001 /* zero, for purposes of calculating distances. */
 #define SCALE_DEVICE_TO_WORLD 0.1f /* scaling distance */
 #define SCALE_WORLD_TO_DEVICE 1.0f/SCALE_DEVICE_TO_WORLD /* scaling distance */
@@ -35,6 +35,7 @@ const HDdouble Quick_Distance_max = 40.0;
 const HDdouble Slow_Distance_max = 25.0;
 const int Nbr_factor = 10;
 const int Nbr_previous = 1;
+const int Nbr_frame_wait = 12;
 
 class HapticData
 {
@@ -45,6 +46,7 @@ class HapticData
 		m_oldPosition.set(0,0,0);
 	};
 	HapticData(){m_id=-1;m_ready=false;m_nbCollision=0;m_currentThrown = NULL;};
+	~HapticData(){};
 	HHD m_id;
 	hduVector3Dd m_position;
 	hduVector3Dd m_oldPosition;
@@ -153,6 +155,8 @@ public:
 	void addPrevious(btRigidBody* target);
 	bool checkPrevious();
 	void cleanHistory();
+	hduVector3Dd groundForce(bool collidebt,hduVector3Dd* effector,btTransform* invertCamera);
+
 
 private:
 

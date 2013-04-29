@@ -61,9 +61,7 @@ void WindowsManager::createWindows(int argc, char** argv)
 
 	//glutTimerFunc(0,m_idle2,0);
 	glutIdleFunc(m_idle);
-	glutMainLoop(); 
-	
-	int i =0;
+	glutMainLoop();	
 }
 
 
@@ -229,9 +227,6 @@ void WindowsManager::getDesktopResolution()
 	//m_window2Rect = rects[1];
 }
 
-
-
-
 void WindowsManager::display1()
 {
 	if(m_subWindow)
@@ -278,7 +273,8 @@ void WindowsManager::idle()
 	}
 
 	m_dt.idle(); 
-	glutPostWindowRedisplay(m_window1);
+	glutPostRedisplay();
+	//glutPostWindowRedisplay(m_window1);
 	//glutPostWindowRedisplay(m_window2);
 }
 
@@ -322,13 +318,15 @@ void WindowsManager::keyboardAll(unsigned char key)
 	case('f'):	toggleFullScreen();
 				break;
 	case('G'):
-	case('g'):	toggleSubWindow();
+	case('g'):	//toggleSubWindow();
 				break;
 	case(' '):	m_dt.reset();
 				break;
-	case(27):	//glutDestroyWindow(m_window2);//Escape			
-				//glutDestroyWindow(0);
-				//exit(0);
+	case(27):	//glutDestroyWindow(m_window2);//Escape	
+		        glutIdleFunc(0);
+				glutEntryFunc(0);
+				glutDestroyWindow(m_window1);		
+				exit(0);
 				break;
 	}
 }

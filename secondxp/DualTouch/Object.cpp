@@ -13,7 +13,8 @@ Object::Object(btCollisionShape * shape,btTransform * transform,const btVector3 
 Object::~Object(void)
 {
 	//delete m_shape; //physic class made it
-	delete m_transform;
+	if(m_transform != NULL)
+		delete m_transform;
 }
 
 void Object::setColor(const btVector3 &color){

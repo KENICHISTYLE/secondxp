@@ -70,6 +70,8 @@ Renderer::~Renderer(void)
 	m_objects.clear();	
 
 	glDeleteTextures(1,(const GLuint*) &m_texturehandle);
+
+	printf(" Renderer Done . \n");
 }
 
 Object* Renderer::addObject(Object * object)
@@ -211,22 +213,18 @@ void Renderer::display()
 	
 	drawSky();
 
-	distanceLine(&btVector3(-5,m_repaire,0.01),(int)(m_repaire + 4), 0.5);
-
-	distanceLine(&btVector3(0,m_repaire,0.01),(int)(m_repaire + 4), 0.5);
-
-	distanceLine(&btVector3(5,m_repaire,0.01),(int)(m_repaire + 4), 0.5);
+	for(int k = -10; k <= 10; k+=5)  
+		distanceLine(&btVector3(k,m_repaire,0.01),(int)(m_repaire *2), 0.5);	
 
 	// show trajectory if object thrown
 	renderTrajectory();
 
 	glLightfv(GL_LIGHT0, GL_POSITION, m_lightPos);
+	//glEnable(GL_LIGHTING);
 
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
 	renderScene();
-	
-	
 
 	//computing shadows mask
 	/*glDisable(GL_LIGHTING);
@@ -242,7 +240,7 @@ void Renderer::display()
 	glStencilOp(GL_KEEP,GL_KEEP,GL_DECR);
 	renderShadows();
 	glFrontFace(GL_CCW);
-	
+
 	glPolygonMode(GL_FRONT,GL_FILL);
 	glPolygonMode(GL_BACK,GL_FILL);
 	glShadeModel(GL_SMOOTH);
@@ -254,7 +252,7 @@ void Renderer::display()
 	glFrontFace(GL_CCW);
 	glEnable(GL_CULL_FACE);
 	glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-	
+
 	glDepthFunc(GL_LEQUAL);
 	glStencilFunc( GL_NOTEQUAL, 0, 0xFFFFFFFFL );
 	glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
@@ -277,19 +275,20 @@ void Renderer::display()
 		glVertex2i(1, 0);
 	glEnd();
 	glDisable(GL_BLEND);
-		
+
 	glEnable(GL_DEPTH_TEST);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();	
-		
+	glPopMatrix();
+
+	
 	glEnable(GL_LIGHTING);
 	glDepthFunc(GL_LESS);
 	glDisable(GL_STENCIL_TEST);
-	glDisable(GL_CULL_FACE);		
-	*/
+	glDisable(GL_CULL_FACE);	*/
+	
 	infoGame();	
-	//glutSwapBuffers();
+	
 }
 
 
@@ -381,15 +380,15 @@ void Renderer::renderScene()
 
 						glTranslatef(trans.x(),trans.y(),0);
 
-						glPushMatrix();    
+						//glPushMatrix();    
 						    
-							glTranslatef(0.0, -0.5f*height , 0.0);
+							//glTranslatef(0.0, -0.5f*height , 0.0);
 
-							glMultMatrixf(mat);		
+							//glMultMatrixf(mat);		
 
 							//coneShadow(radius,height);
 	
-						glPopMatrix();
+						//glPopMatrix();
 
 						glTranslatef(0,0,trans.z());						
 
@@ -476,11 +475,12 @@ void Renderer::renderShadows()
 			glPushMatrix();
 			glMultMatrixf(m);
 
-			glColor3f(0.2f,0.2f,0.2f);
-			drawShadow(m_objects[i]->m_shape,extrusion*m_objects[i]->m_transform->getBasis());
+			glColor3f(0.8f,0.2f,0.2f);
+			drawShadow(m_objects[i]->m_shape,extrusion*m_objects[i]->m_transform->getBasis());			
 			glPopMatrix();
 		}
 	}
+	glEnable(GL_LIGHTING);
 }
 
 void Renderer::drawBox(const btVector3 &halfSize)
@@ -720,7 +720,6 @@ void Renderer::circle(GLfloat radius,bool axeZ,bool Fill){
 	}
 }
 
-
 void Renderer::distanceLine(btVector3* start, int stop,GLfloat size){
 
 	if(stop < 1)
@@ -778,8 +777,6 @@ void Renderer::drawShadow(const btCollisionShape* shape,const btVector3 &extrusi
 		glEnd();
 	}
 }
-
-
 
 Renderer::ShapeCache*	Renderer::cache(btConvexShape* shape)
 {
@@ -946,7 +943,6 @@ void Renderer::setText(std::string* text){
 	delete m_text;
 	 m_text = text;
 }
-
 
 void Renderer::infoGame(){
 

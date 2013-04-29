@@ -3,7 +3,7 @@
 #include "BulletCollision\CollisionShapes\btCollisionShape.h"
 #include <iostream>
 
-const int ThronNumber = 4;
+const int ThronNumber = 12;
 const btVector3 green(0.0f,1.0f,0.0f);
 const btVector3 dark_red(0.4f,0.15f,0.15f);
 const btVector3 orange(0.8f,0.6f,0.2f);
@@ -21,6 +21,7 @@ class Object
 {
 public:
 	Object(btCollisionShape * shape,btTransform * transform,const btVector3 &color);
+	Object();
 	~Object(void);
 	btCollisionShape * m_shape;
 	btTransform  * m_transform;

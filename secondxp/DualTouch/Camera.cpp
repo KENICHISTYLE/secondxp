@@ -5,7 +5,7 @@ Camera::Camera(void)
 	m_speed=0.1f;
 	m_torque=0.01f;
 	m_eye.setValue(-1,0,1);
-	m_look.setValue(0,1,0);
+	m_look.setValue(0,10,0);
 	m_up.setValue(0,0,1);
 	m_keyDown=false;
 	m_oldx = 0;
@@ -110,7 +110,7 @@ void Camera::lookAt()
 	btScalar m[16];
 	view.getOpenGLMatrix(m);
 	glMultMatrixf(m);
-	glTranslatef(-m_eye.getX(),-m_eye.getY(),-m_eye.getZ());
+	glTranslatef(-m_eye.getX(),-m_eye.getY()+6,-m_eye.getZ());
 	m_view.setBasis(basis);
 	m_view.setOrigin(m_eye);
 	/*gluLookAt(	m_eye.getX(),m_eye.getY(),m_eye.getZ(),

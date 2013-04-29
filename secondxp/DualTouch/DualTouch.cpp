@@ -8,8 +8,12 @@ DualTouch::DualTouch(void)
 
 DualTouch::~DualTouch(void)
 { 
-	delete m_canonShape;	
-	m_physic.exit();
+	deleteThrowedObjects();
+	m_effObj->m_transform = NULL;
+	//m_hds.m_ptr = NULL;
+	//delete m_canonShape;
+
+	printf(" Dual Touch Done . \n");
 }
 
 void DualTouch::init1()
@@ -26,14 +30,14 @@ void DualTouch::init1()
 	m_lancerNbr = 0;
 	m_note = "";
 	m_eval = false;
-	m_withTraj = true;
+	m_withTraj = false;
 	m_feed = true;
 	//m_leftToTrhow = ThronNumber;
 	m_renderer.init();
 	m_renderer.setRepaire(m_lunch_y);
 	m_physic.init();
 	m_log.init();
-	m_camera1.moveTo(btVector3(0.5,-10,3));
+	m_camera1.moveTo(btVector3(0.0,-5,5));
 	//m_camera2.moveTo(btVector3(-0.5,-10,3));
 
 	m_hds.addDevice("PHANToM",m_camera1.m_view);
@@ -57,7 +61,7 @@ void DualTouch::init2()
 {
 	//m_hd2.init(std::string("PHANToM 2"));
 	//m_hd2.setCameraView(&m_camera2.m_view);
-	m_renderer.init();	
+	//m_renderer.init();	
 }
 
 void DualTouch::createScene()
@@ -86,7 +90,7 @@ void DualTouch::createScene()
 
 void DualTouch::addLauncher(){
 	//
-	btScalar hx = 0.3;
+	btScalar hx = 0.25;
 	btScalar hy = 0.7;
 	btScalar hz = 0.3;
 	btTransform * t = new btTransform(btQuaternion(),btVector3(0,m_lunch_y,hy+0.2)); 
@@ -102,7 +106,7 @@ void DualTouch::addLauncher(){
 	
 	m_canonShape = new btCylinderShape(btVector3(hx,hy*2,hz));	
 	for(int i = 0; i <canonNbr; i++){
-		m_CanonPos[i] = ((i+1)-canonNbr/2)*3;
+		m_CanonPos[i] = ((i+1)-canonNbr/2)*2 ;
 		t = new btTransform(btQuaternion(btVector3(1,0,0),-0.55),btVector3(m_CanonPos[i],m_lunch_y+hy,hy+1.5));
 		m_canons[i] = m_renderer.addObject(new Object(m_canonShape,t,dark_Grey));			
 	}  
@@ -174,7 +178,8 @@ void DualTouch::createCursor(unsigned int deviceId)
 	m_renderer.addObject(new Object(shape,t,neutral));
 
 	shape = new btConeShapeZ(0.25f,1);
-	m_renderer.addObject(new Object(shape,&(m_hds.m_effectors[deviceId]),m_cursorColors[deviceId]));
+	m_effObj = new Object(shape,&(m_hds.m_effectors[deviceId]),m_cursorColors[deviceId]);
+	m_renderer.addObject(m_effObj);
 
 }
 
