@@ -35,7 +35,8 @@ const HDdouble Quick_Distance_max = 40.0;
 const HDdouble Slow_Distance_max = 25.0;
 const int Nbr_factor = 10;
 const int Nbr_previous = 1;
-const int Nbr_frame_wait = 12;
+const int Nbr_frame_wait = 0;
+const HDdouble max_velocity = 260; 
 
 class HapticData
 {
@@ -52,6 +53,7 @@ class HapticData
 	hduVector3Dd m_oldPosition;
 	hduVector3Dd m_atThrowPos;
 	hduVector3Dd m_force;
+	hduVector3Dd m_velocity;
 	HDdouble m_transform[16];
 	hduVector3Dd m_realPosition;	
 	HDint m_buttons;
@@ -156,7 +158,9 @@ public:
 	bool checkPrevious();
 	void cleanHistory();
 	hduVector3Dd groundForce(bool collidebt,hduVector3Dd* effector,btTransform* invertCamera);
-
+	hduVector3Dd magneticForce(hduVector3Dd* effector,hduVector3Dd* currentTarget,btTransform* invertCamera);
+	hduVector3Dd atomeForce(hduVector3Dd* effector, hduVector3Dd* currentTarget,btTransform* invertCamera);
+	HDdouble lamda(HDdouble x, HDdouble y);
 
 private:
 
@@ -185,12 +189,13 @@ private:
 	bool m_Feedback;	
 	bool m_devine;
 	int m_sible;
+	HDdouble m_velocity;
 	HDdouble m_lastFactor[Nbr_factor];
 	bool m_lastSelected[Nbr_previous];
-	int m_factor_index;
+	int m_index;
 	int m_selected_index;
 	hduVector3Dd m_Force;
-	hduVector3Dd m_predForce;
+	hduVector3Dd m_predForce;	
 	HDdouble m_selectedDistance;
 	btRigidBody* m_ground;	
 };

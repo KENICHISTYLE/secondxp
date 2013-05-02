@@ -3,7 +3,8 @@
 #include "BulletCollision\CollisionShapes\btCollisionShape.h"
 #include <iostream>
 
-const int ThronNumber = 12;
+const int ThronNumber = 2;
+const btScalar BALL_MASS = 1.5;
 const btVector3 green(0.0f,1.0f,0.0f);
 const btVector3 dark_red(0.4f,0.15f,0.15f);
 const btVector3 orange(0.8f,0.6f,0.2f);

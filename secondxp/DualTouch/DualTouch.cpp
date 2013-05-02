@@ -32,12 +32,16 @@ void DualTouch::init1()
 	m_eval = false;
 	m_withTraj = false;
 	m_feed = true;
+
 	//m_leftToTrhow = ThronNumber;
 	m_renderer.init();
 	m_renderer.setRepaire(m_lunch_y);
 	m_physic.init();
 	m_log.init();
+	m_log.setOption('f',m_feed);
+	m_log.setOption('t',m_withTraj);
 	m_camera1.moveTo(btVector3(0.0,-5,5));
+	m_left_to_launch = Nbr_launch_game;
 	//m_camera2.moveTo(btVector3(-0.5,-10,3));
 
 	m_hds.addDevice("PHANToM",m_camera1.m_view);
@@ -86,6 +90,12 @@ void DualTouch::createScene()
 
 	addLauncher();
 
+	m_log.createLogFile();
+	m_log.saveBeginInfo();
+	ostringstream oss;
+	oss << ThronNumber;
+	string s = " Number of balls par throw \n"+ oss.str() + "\n" ;
+	m_log.saveToLogFile(s.c_str());
 }
 
 void DualTouch::addLauncher(){
@@ -106,13 +116,30 @@ void DualTouch::addLauncher(){
 	
 	m_canonShape = new btCylinderShape(btVector3(hx,hy*2,hz));	
 	for(int i = 0; i <canonNbr; i++){
-		m_CanonPos[i] = ((i+1)-canonNbr/2)*2 ;
+		m_CanonPos[i] = ((i+1)-canonNbr/2)*4;
 		t = new btTransform(btQuaternion(btVector3(1,0,0),-0.55),btVector3(m_CanonPos[i],m_lunch_y+hy,hy+1.5));
 		m_canons[i] = m_renderer.addObject(new Object(m_canonShape,t,dark_Grey));			
 	}  
 	
 }
 
+void DualTouch::gameStatus(){
+	if(m_left_to_launch > 0){
+		m_left_to_launch--;
+		ostringstream oss;
+		oss << (int) m_left_to_launch;
+		string s = " Throw number \n"+ oss.str() ;
+		oss.clear();
+		oss << Nbr_launch_game;
+		s += " of " + oss.str() + "\n";
+		m_log.saveToLogFile(s.c_str());
+		return;
+	}	
+
+	m_left_to_launch = Nbr_launch_game;
+	m_log.saveEndInfo();
+	m_log.saveBeginInfo();
+}
 
 void DualTouch::moveCanonLeft(btScalar x){
 	btTransform trans;	
@@ -183,8 +210,6 @@ void DualTouch::createCursor(unsigned int deviceId)
 
 }
 
-
-
 void DualTouch::throwMultiObject(btScalar Onumber, float canonPos, int index){
 	   	float dec = 0.0f;		
 
@@ -225,19 +250,18 @@ void DualTouch::throwMultiObject(btScalar Onumber, float canonPos, int index){
 
 		  shape = new btSphereShape (Ball_Size);		  
 		  body = m_physic.addRigidBody(BALL_MASS,t,shape);		
-		  switch(y){
-		  case 0 :   obj = new Object(shape,t,yellow);
-					 obj->setScore(-10);
-					 break;
-		  case 1 :   obj = new Object(shape,t,light_red);
+		  switch(index){
+
+		  case 0 :   obj = new Object(shape,t,light_red);
 			         obj->setScore(20);
 					 break;
-		  case 2 :   obj = new Object(shape,t,blue);
-			         obj->setScore(10);
-					 break;
+		  case 1 :  
+					 obj = new Object(shape,t,blue);
+					 obj->setScore(10);
+					 break;		  
 		  default:  
-			         obj->setScore(0);
-					 obj = new Object(shape,t,gray);
+			         obj = new Object(shape,t,yellow);
+			         obj->setScore(-10);
 					 break;
 		  }
 		  setVelocityTarget(m_timeSpeed,body,initial_x); 
@@ -279,18 +303,17 @@ void DualTouch::getFinalPos(btTransform* target,int targetIndex, btScalar vx,  b
 	btScalar z = 0;
 	btScalar x = 0;
 	btVector3* p;
-	while(y>m_impactY - m_lunch_y && j< 150){
-		++i;
+	while(y>m_impactY - m_lunch_y && j< 600){
+		++j;
 		y = m_velocityY * cos(m_theta) * time;
 		y = m_lunch_y - y;
 		z = (gravity.z()/2  * pow(time,2) ) +( m_velocityZ * sin(m_theta)*time ) +  m_lunch_z ;
 		x =vx*(time-m_timeSpeed)+x_dec;
 		time += m_timeSpeed; 
-		if( i % 8 == 0){
-			j++;
-			p = new btVector3(x,y,z);
-			m_trajectory[targetIndex].push_back(p);
-		}
+
+		p = new btVector3(x,y,z);
+		m_trajectory[targetIndex].push_back(p);
+		
 		if(y <= m_impactY  && s)
 		{
 			m_impactPossible[targetIndex] = btVector3(x,y+0.1,z);
@@ -474,7 +497,9 @@ void DualTouch::evaluateScore(){
 
 void DualTouch::waitFeadBack(){	
 	if(m_hds.isReadyLaunch()){
-		//m_log.printElepsedTime();
+
+		gameStatus();
+
 		m_time = time(NULL);
 		deleteThrowedObjects();			
 		for (int i=0; i<canonNbr; i++) { // shuffle

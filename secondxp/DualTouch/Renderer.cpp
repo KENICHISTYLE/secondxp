@@ -846,10 +846,12 @@ void Renderer::renderTrajectory(){
 	glLineWidth(0.8);
 	for (int j = 0; j < ThronNumber;j++)			
 		if(m_points[j].size()>0){			
-			for(unsigned int i =0 ;i< (m_points[j].size());i++){				
-				drawPoint((m_points[j])[i]->getX(), 
-						  (m_points[j])[i]->getY(),
-						  (m_points[j])[i]->getZ());					
+			for(unsigned int i =0 ;i< (m_points[j].size());i++){	
+				//if( i % 10 == 0){
+					drawPoint((m_points[j])[i]->getX(), 
+							  (m_points[j])[i]->getY(),
+							  (m_points[j])[i]->getZ());	
+				//}
 			}			
 	}
 	
