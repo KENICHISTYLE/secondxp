@@ -15,6 +15,7 @@
 
 #include "Object.h"
 
+#include "Consts.h"
 
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/CollisionDispatch/btSphereSphereCollisionAlgorithm.h"

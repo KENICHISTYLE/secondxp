@@ -214,7 +214,7 @@ void Renderer::display()
 	drawSky();
 
 	for(int k = -10; k <= 10; k+=5)  
-		distanceLine(&btVector3(k,m_repaire,0.01),(int)(m_repaire *2), 0.5);	
+		distanceLine(&btVector3(k,m_repaire,0.01),(int)(m_repaire *3), 0.5);	
 
 	// show trajectory if object thrown
 	renderTrajectory();
@@ -847,11 +847,11 @@ void Renderer::renderTrajectory(){
 	for (int j = 0; j < ThronNumber;j++)			
 		if(m_points[j].size()>0){			
 			for(unsigned int i =0 ;i< (m_points[j].size());i++){	
-				//if( i % 10 == 0){
+				if( i % 6 == 0){
 					drawPoint((m_points[j])[i]->getX(), 
 							  (m_points[j])[i]->getY(),
 							  (m_points[j])[i]->getZ());	
-				//}
+				}
 			}			
 	}
 	

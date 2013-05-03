@@ -184,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Consts.h" />
     <ClInclude Include="DualTouch.h" />
     <ClInclude Include="HapticDevice.h" />
     <ClInclude Include="Logs.h" />

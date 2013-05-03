@@ -72,10 +72,11 @@ HDCallbackCode HDCALLBACK HapticDevice::aSchedule(void *pUserData)
 						and x is the vector magnitude and direction.  In this case,
 						k = STIFFNESS, and x is the penetration vector from 
 						the actual position to the desired position. */
-
-					force.set(0,-0.2,0.3);					
-					force += STIFFNESS*distance;						
+														
+					force = STIFFNESS*distance;						
 					force *=  BALL_MASS;
+					force[2] += 0.1;
+					force[1] += -0.1;
 					force[0] = 0;
 				} 
 			}
@@ -512,9 +513,9 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 			if( m_Feedback && m_devine && m_thrownRigids != NULL && m_thrownRigids->size()>0 && deplacement > distanceMax && m_sible == 0 /* && !m_targetChoosen */){
 				//btTransform trans;				
 				//hduVector3Dd line = trajectoryLine(m_hss[i].m_free.m_position, m_hss[i].m_free.m_oldPosition);
-				HDdouble distance = Slow_Distance_max;
-				if(move.magnitude() >= Quick_Dicplacement)
-					distance = Quick_Distance_max;
+				//HDdouble distance = Slow_Distance_max;
+				//if(move.magnitude() >= Quick_Dicplacement)
+				HDdouble distance = Quick_Distance_max;
 				//unsigned int targ = 0;
 				for(unsigned int j = 0; j<m_thrownRigids->size(); j++){
 					//trans = (*m_thrownRigids)[j]->getWorldTransform();
@@ -581,7 +582,7 @@ void  HapticDevice::feedback(btDynamicsWorld &dynamic)
 
 					m_velocity = m_hss[i].m_free.m_velocity.magnitude();
 
-					if(pos[2] >= test[2]){
+					if(pos[2]-4 >= test[2]){
 						if(!m_hss[i].m_free.m_done){	
 					
 							//hduVector3Dd helpForce = ForceToImpact(&pos,&impact);	
@@ -808,9 +809,9 @@ hduVector3Dd HapticDevice::magneticForce(hduVector3Dd* effector,hduVector3Dd* cu
 	
 	hduVector3Dd force = hduVector3Dd(0,0.1,0.0);
 
-	HDdouble phi = 2.0;
+	HDdouble phi = 0.9;
 
-	HDdouble sigma = 20;
+	HDdouble sigma = 10;
 
 	HDdouble s2 = pow(sigma, 2);
 
@@ -822,6 +823,7 @@ hduVector3Dd HapticDevice::magneticForce(hduVector3Dd* effector,hduVector3Dd* cu
 	
 	HDdouble distanceMin = target.magnitude();
 	
+	/*
 	for(unsigned int i = 0; i< m_possibleImpact.size(); i++){
 
 		hduVector3Dd impact = invertTransform(m_possibleImpact[i], invertCamera);
@@ -841,28 +843,33 @@ hduVector3Dd HapticDevice::magneticForce(hduVector3Dd* effector,hduVector3Dd* cu
 		force += d * f * inbetween;	
 		
 	}	
+	*/
 
 	
-	for(unsigned int i = 0; i < m_trajectory[m_index].size(); i++){	
+	for(int traj = 0; traj < ThronNumber ; traj++){
+		for(unsigned int i = 0; i< m_trajectory[traj].size(); i++){			
 
-		hduVector3Dd impact = invertTransform(m_trajectory[m_index][i], invertCamera);			
+			if( i % 6 == 0){
+				hduVector3Dd impact = invertTransform((m_trajectory[traj])[i], invertCamera);
 
-		hduVector3Dd inbetween = impact - *effector ;	
+				hduVector3Dd inbetween = impact - *effector ;			
 
-		//if(impact[2] > (*effector)[2] + 5 || impact[2] < (*effector)[2] - 5)
-		//		continue;
-
-		//std::cout << inbetween[1] << " ** " ;
-
-		HDdouble x = inbetween.magnitude();
-
-		HDdouble f = phi * ( pow(x,2)/ s2 ) * std::exp((s2 - pow(x,2))/s2);				
+				HDdouble x = inbetween.magnitude();
+				
+				//if(inbetween[1] < 3 && inbetween[1] > -3){
+				HDdouble f = phi * ( pow(x,2)/ s2 ) * std::exp((s2 - pow(x,2))/s2);				
 		
-		inbetween.normalize();		
-		
-		//force +=  (f * inbetween);				
-	
-		
+				inbetween.normalize();		
+
+				HDdouble d = 1;// 1 si c'est la sible, < 1 sinon 
+				if(x >= 0.1) 
+					d = distanceMin / x; 
+
+				force +=  f * inbetween;		
+				//}
+			}
+			
+		}	
 	}
 
 	//std::cout << " --> "<< std::endl;

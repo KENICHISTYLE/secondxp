@@ -1,9 +1,9 @@
-﻿La génération a démarré 29/04/2013 19:43:15.
+﻿La génération a démarré 03/05/2013 14:11:38.
      1>Projet "C:\Users\amghar\Documents\Visual Studio 2010\Projects\secondxp\secondxp\DualTouch\DualTouch.vcxproj" sur le nœud 2 (build cible(s)).
      1>InitializeBuildStatus:
          Création de "Release\Multi target.unsuccessfulbuild", car "AlwaysCreate" a été spécifié.
        ClCompile:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\sdk\bullet-2.78\src" /I"C:\sdk\freeglut-2.6.0\include" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D USE_PARALLEL_DISPATCHER /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Camera.cpp DualTouch.cpp HapticDevice.cpp Renderer.cpp WindowsManager.cpp
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\sdk\bullet-2.78\src" /I"C:\sdk\freeglut-2.6.0\include" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D USE_PARALLEL_DISPATCHER /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Camera.cpp DualTouch.cpp HapticDevice.cpp Logger.cpp Main.cpp Object.cpp Physic.cpp Renderer.cpp WindowsManager.cpp
          Camera.cpp
          Note: including lib: glut32.lib
          
@@ -11,13 +11,21 @@
          Note: including lib: glut32.lib
          
          HapticDevice.cpp
-     1>HapticDevice.cpp(562): warning C4305: '=' : troncation de 'double' à 'btScalar'
-     1>HapticDevice.cpp(897): warning C4018: '<' : incompatibilité signed/unsigned
-     1>HapticDevice.cpp(927): warning C4018: '<' : incompatibilité signed/unsigned
+     1>HapticDevice.cpp(566): warning C4305: '=' : troncation de 'double' à 'btScalar'
+     1>HapticDevice.cpp(1031): warning C4018: '<' : incompatibilité signed/unsigned
+     1>HapticDevice.cpp(1060): warning C4018: '<' : incompatibilité signed/unsigned
+         Logger.cpp
+     1>Logger.cpp(298): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files\Microsoft Visual Studio 10.0\VC\include\stdio.h(253) : voir la déclaration de 'fscanf'
+         Main.cpp
+         Note: including lib: glut32.lib
+         
+         Object.cpp
+         Physic.cpp
          Renderer.cpp
          Note: including lib: glut32.lib
          
-     1>Renderer.cpp(934): warning C4018: '<' : incompatibilité signed/unsigned
+     1>Renderer.cpp(935): warning C4018: '<' : incompatibilité signed/unsigned
          WindowsManager.cpp
          Note: including lib: glut32.lib
          
@@ -44,4 +52,4 @@
 
 La génération a réussi.
 
-Temps écoulé 00:00:10.02
+Temps écoulé 00:00:15.18

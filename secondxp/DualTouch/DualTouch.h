@@ -6,16 +6,18 @@
 #include "HapticDevice.h"
 #include <iostream>
 #include "Logs.h"
+#include "Consts.h"
 
 const btScalar Ball_Size = 0.3;
 const btScalar Effector_Mass = 4;
 const btScalar Effector_Size = 0.08f;
 const btScalar m_timeSpeed = 0.01;
-const int canonNbr = 4;
+const int canonNbr = 6;
 const float Gut_vz = 5.0f;
 const float Gut_vy = 13.2f;
 const double Time = 10 ;
 const int Nbr_launch_game = 5;
+const unsigned int max_calculated_points = 600;
 
 using namespace std;
 
@@ -72,8 +74,14 @@ public:
 
 	void reset();
 
-	void gameStatus();
+	void gameStatus();	
+	void reportScoreInfo();
+	const char* ballValue(Object* ball);
 	
+	void logDynamic();
+	string stringFromBtvector(btVector3* vec);
+	string colorFromScore(int score);
+
 	Logger m_log;
 	Physic m_physic;
 	Renderer m_renderer;
@@ -95,6 +103,9 @@ public:
 	int m_score;
 	int m_lancerNbr;
 	int m_catchs;
+	int m_good_catchs;
+	int m_bad_catchs;
+	int m_ok_catchs;
 
 	btRigidBody* m_curentThrowed;	
 	Object* m_curentObject;
@@ -109,7 +120,9 @@ public:
 	btCollisionShape* m_canonShape;	
 	int m_CanonPos[canonNbr];	
 	time_t m_time;
+	time_t m_log_time;
 	string m_note;
+	int m_throw_at_once;
 	bool m_eval;
 	bool m_withTraj;
 	bool m_feed;

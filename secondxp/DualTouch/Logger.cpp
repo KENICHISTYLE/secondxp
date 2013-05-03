@@ -1,11 +1,16 @@
 
 #include "Logs.h"
+#include <iostream>
+#include <windows.h>
+#include <direct.h>
 
-
-const char* sessionsFileName = "Sessions.ses"; 
-const char* log_name = " Game_log_";
+const char* Log_directory = "Logs\\";
+const char* sessionsFileName = "Logs\\Sessions.ses"; 
+const char* log_name = "Game_log_";
+const char* dyn_log_name = "Game_dynamic_log";
 const char* ext = ".log";
 const int max_line_length = 200;
+const int crac_par_val = 10;
 
 Logger::Logger(){	
 }
@@ -15,9 +20,18 @@ void Logger::init(){
 	m_Session_id = 0;
 	m_game_id = 0;
 	m_CurrentLogFile = "";
+	m_dynamic_logname = "";
 
 	time(&m_SessionBeginTime);
 	time(&m_SessionEndTime);
+
+	FILE* dir = NULL;
+	fopen_s(&dir,Log_directory,"r");
+		
+	if(dir == NULL)
+		mkdir(Log_directory);
+	else
+		fclose(dir);
 
 	loadSession();
 }
@@ -46,18 +60,72 @@ double Logger::getElepsedTime(){
 	return  difftime(t, m_SessionBeginTime);
 }
 
+void Logger::dynamicBegin(){
+	if(m_dynamic_logname != ""){
+
+		FILE* file = NULL;
+
+		fopen_s(&file, m_dynamic_logname.c_str(), "r+");
+
+		if(file != NULL){
+			endOffile(file);
+			fprintf_s(file,"########  Status at\t");
+
+			struct tm datetime;
+			time_t now;
+
+			time(&now);
+
+			localtime_s(&datetime, &now);
+
+			fprintf_s(file," %d:%d:%d ------------------ ##### \n",datetime.tm_hour,datetime.tm_min,datetime.tm_sec);
+		}
+
+
+		m_dynamic_log = file;
+	}
+}
+
+void Logger::dynamicWrite(const char* log){
+	if(m_dynamic_log != NULL){		
+		fprintf_s(m_dynamic_log,"%s",log);
+	}
+}
+
+void Logger::dynamicEnd(){
+	if(m_dynamic_log != NULL)
+		fclose(m_dynamic_log);
+	m_dynamic_log = NULL;
+}
+
 void Logger::createLogFile(){
 	
 	ostringstream oss;
 	oss << (int) m_Session_id;
 
-	string fileName = log_name + oss.str() + ext;
+	string fileName = Log_directory;
+	fileName += log_name + oss.str() + ext;
 
 	m_CurrentLogFile = fileName;
+
+	string dynName = Log_directory;
+	dynName += dyn_log_name + oss.str() + ext;
+
+	m_dynamic_logname = dynName;
 
 	FILE* file = NULL;
 
 	fopen_s(&file,fileName.c_str(),"w");
+
+	fprintf_s(file,"# Game Session ID \n");
+	fprintf_s(file,"%d \n",m_Session_id);
+	fprintf_s(file,"### Session Start ### \n");
+
+	fclose(file);
+
+	file = NULL;
+
+	fopen_s(&file,dynName.c_str(),"w");
 
 	fprintf_s(file,"# Game Session ID \n");
 	fprintf_s(file,"%d \n",m_Session_id);
@@ -104,7 +172,7 @@ void Logger::saveBeginInfo(){
 
 	endOffile(file);
 
-	fprintf_s(file,"# Joueur ID \n");
+	fprintf_s(file,"# Game ID \n");
 
 	fprintf_s(file,"%d \n",m_game_id);	
 
@@ -130,8 +198,8 @@ void Logger::saveBeginInfo(){
 	
 void Logger::saveTimeDate(FILE* file, struct tm* datetime){
 
-	fprintf_s(file," %d / %d / %d    %d:%d:%d \n",datetime->tm_mday,datetime->tm_mon,
-		datetime->tm_year,datetime->tm_hour,datetime->tm_min,datetime->tm_sec);
+	fprintf_s(file," %d / %d / %d    %d:%d:%d \n",datetime->tm_mday,(datetime->tm_mon + 1),(
+		datetime->tm_year + 1900),datetime->tm_hour,datetime->tm_min,datetime->tm_sec);
 
 }
 
@@ -154,12 +222,14 @@ void Logger::saveEndInfo(){
 
 	saveTimeDate(file,&Today);
 
-	fprintf_s(file,"# ---------------------------------------------------------- #");
+	fprintf_s(file,"# ---------------------------------------------------------- # \n\n ");
 
 	fclose(file);
 
 }
 
+// Use when log one info
+// same as startLogWrite();writeToLog(log);void endLogWrite();
 void Logger::saveToLogFile(const char* log){
 
 	if(m_CurrentLogFile != ""){
@@ -169,14 +239,94 @@ void Logger::saveToLogFile(const char* log){
 
 		if(file != NULL){
 			endOffile(file);
-			fprintf_s(file,log);
+			fprintf_s(file,"%s",log);
 			fclose(file);
 		}
 	}
 
 }
 
-void Logger::saveTrajectory(){
+// Use to log multiple info 
+void Logger::startLogWrite(){
+	if(m_CurrentLogFile != ""){
+		FILE* file = NULL;
+
+		fopen_s(&file, m_CurrentLogFile.c_str(), "r+");
+
+		if(file != NULL){
+			endOffile(file);
+		}
+
+		m_open_file = file;
+	}
+}
+
+void Logger::writeToLog(const char* log){
+	if(m_open_file != NULL)
+		fprintf_s(m_open_file,"%s",log);
+}
+
+void Logger::endLogWrite(){
+	if(m_open_file != NULL)
+		fclose(m_open_file);
+	m_open_file = NULL;
+}
+
+void Logger::saveTrajectory(vector <btVector3*>* trajectory,unsigned int Max_points){
+
+	FILE* file = NULL;
+	
+    fopen_s(&file,m_CurrentLogFile.c_str(),"r+");
+
+	endOffile(file);
+
+	fprintf_s(file,"# Trajectory par ball \n");
+
+	for(int i =0 ; i <ThronNumber ; i++){
+			fprintf_s(file," Ball %d ",i);	
+			for(int j = 0; j< 3*crac_par_val; j++)
+				fputc(' ',file);
+			fputc('\t',file);
+		}
+
+	fprintf_s(file,"\n");
+
+	for(int i =0 ; i <ThronNumber ; i++){		    
+			fputc(' X',file);
+			for(int j = 0; j< crac_par_val; j++)
+				fputc(' ',file);	
+			fputc('Y',file);
+			for(int j = 0; j< crac_par_val; j++)
+				fputc(' ',file);
+			fputc('Z',file);
+			for(int j = 0; j< crac_par_val; j++)
+				fputc(' ',file);
+			fputc('\t',file);
+		}
+
+	fprintf_s(file,"\n");
+
+	//unsigned int pmax = trajectory[i].size()
+
+	for(unsigned int k = 0; k< Max_points; k++){
+
+		for(int i =0 ; i <ThronNumber ; i++){
+			
+			unsigned s = trajectory[i].size();
+
+			if(s > 0 && s > k)
+			{
+				fprintf_s(file," %lf %lf %lf ",(trajectory[i][k])->x(),(trajectory[i][k])->y(),(trajectory[i][k])->z());
+			}
+			else
+				fprintf_s(file,"                    ");
+			fputc('\t',file);
+		}
+
+		fprintf_s(file,"\n");
+	}
+
+	fclose(file);
 }
 
 void Logger::saveSession(FILE* session){

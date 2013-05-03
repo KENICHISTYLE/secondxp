@@ -8,6 +8,7 @@
 #include "Object.h"
 #include <HDU/hduError.h>
 #include <limits>
+#include "Consts.h"
 
 #pragma comment (lib,"hd.lib")
 #pragma comment (lib,"hdu.lib")
@@ -31,7 +32,7 @@
 
 const HDdouble Quick_Dicplacement = 40;
 const HDdouble Distance_max = 5.0;
-const HDdouble Quick_Distance_max = 40.0;
+const HDdouble Quick_Distance_max = 60.0;
 const HDdouble Slow_Distance_max = 25.0;
 const int Nbr_factor = 10;
 const int Nbr_previous = 1;
@@ -182,6 +183,8 @@ private:
 	std::vector <Object *>* m_thrownObjects;
 	std::vector <btRigidBody *>* m_thrownRigids;
 	std::vector <btVector3*> m_trajectory[ThronNumber];
+	btTransform* m_invertCamera;
+	hduVector3Dd m_EffectorPos;
 	bool m_canLaunch;
 	bool m_posSet;
 	bool m_targetChoosen;
