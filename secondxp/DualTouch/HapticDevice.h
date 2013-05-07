@@ -19,7 +19,7 @@
 #define EPSILON 0.00001 /* zero, for purposes of calculating distances. */
 #define SCALE_DEVICE_TO_WORLD 0.1f /* scaling distance */
 #define SCALE_WORLD_TO_DEVICE 1.0f/SCALE_DEVICE_TO_WORLD /* scaling distance */
-#define OFFSET_TO_CAMERA 90
+#define OFFSET_TO_CAMERA 200
 #define NB_DEVICES_MAX 1 //2
 #define MAXSCLAR 9999.9
 #define MAXSMOOTH_LOOP 50
@@ -36,7 +36,7 @@ const HDdouble Quick_Distance_max = 60.0;
 const HDdouble Slow_Distance_max = 25.0;
 const int Nbr_factor = 10;
 const int Nbr_previous = 1;
-const int Nbr_frame_wait = 0;
+const int Nbr_frame_wait = 20;
 const HDdouble max_velocity = 260; 
 
 class HapticData
@@ -113,6 +113,7 @@ public:
 	static hduVector3Dd ComputeForce(hduVector3Dd* effector, hduVector3Dd* target, hduVector3Dd* velocity);
 	hduVector3Dd ForceToImpact(hduVector3Dd* effector,hduVector3Dd* impactpos);
 	btVector3 getEffectorPosition();
+	btVector3 getImpactDir();
 
 	HDdouble betweenTwoPoints(hduVector3Dd point1, hduVector3Dd point2);
 	void(*m_newConstraint)(void * ptr,btRigidBody *,unsigned int );
@@ -158,6 +159,8 @@ public:
 	void addPrevious(btRigidBody* target);
 	bool checkPrevious();
 	void cleanHistory();
+	void freeIf();	
+
 	hduVector3Dd groundForce(bool collidebt,hduVector3Dd* effector,btTransform* invertCamera);
 	hduVector3Dd magneticForce(hduVector3Dd* effector,hduVector3Dd* currentTarget,btTransform* invertCamera);
 	hduVector3Dd atomeForce(hduVector3Dd* effector, hduVector3Dd* currentTarget,btTransform* invertCamera);
@@ -185,6 +188,7 @@ private:
 	std::vector <btVector3*> m_trajectory[ThronNumber];
 	btTransform* m_invertCamera;
 	hduVector3Dd m_EffectorPos;
+	btVector3 m_effRenderPos;
 	bool m_canLaunch;
 	bool m_posSet;
 	bool m_targetChoosen;
@@ -201,6 +205,7 @@ private:
 	hduVector3Dd m_predForce;	
 	HDdouble m_selectedDistance;
 	btRigidBody* m_ground;	
+	bool m_freeT;
 };
 
 

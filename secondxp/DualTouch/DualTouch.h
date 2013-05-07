@@ -7,17 +7,22 @@
 #include <iostream>
 #include "Logs.h"
 #include "Consts.h"
+#include <Windows.h>
 
-const btScalar Ball_Size = 0.3;
+const btScalar Ball_Size = 0.35;
 const btScalar Effector_Mass = 4;
-const btScalar Effector_Size = 0.08f;
+const btScalar Effector_Size = 0.16;
 const btScalar m_timeSpeed = 0.01;
-const int canonNbr = 6;
+const int canonNbr = 10;
 const float Gut_vz = 5.0f;
-const float Gut_vy = 13.2f;
-const double Time = 10 ;
-const int Nbr_launch_game = 5;
+const float Gut_vy = 20.0f;
+const double Time = 3 ;
+const double LearnTime = 60 ;
+const int ThrowV = 6;
+const int Nbr_launch_game = 5*ThrowV;
 const unsigned int max_calculated_points = 600;
+const btScalar max_canon_dep = 1;
+const int PauseLenght = 20;
 
 using namespace std;
 
@@ -27,6 +32,32 @@ class DualTouch
 public:
 	DualTouch(void);
 	~DualTouch(void);
+
+	struct ball{
+		btVector3 pos;
+		int score;
+	};
+
+	
+	struct log_dyn{
+		struct log_dyn(void){
+			caught = false;
+			phase = false;
+		};
+		struct ball throwed[ThronNumber];
+		struct myTime currentTime;
+		btVector3 effcPosition;
+		btScalar vitesseLancer;
+		bool caught;
+		bool phase;
+		int phaseNbr;
+		int caughtValue;
+		int score;
+		int catchNbr;
+		int goodCatchNbr;
+		int badCatchNbr;
+		int okCatchNbr;
+	};
 
 	void reshape(int width, int height);
 	void display1();
@@ -48,12 +79,12 @@ public:
 	void createScene();
 	void createCursor(unsigned int deviceId);
 	void addLauncher();
-	void rotateCanon(btVector3* rotate);
-	void moveCanonLeft(btScalar x);
-	void moveCanonRight(btScalar x);
-	void teleportX(Object* canon,btScalar x);
+	void start();
+	bool testIfCanThrow();
 
-	void getFinalPos(btTransform* target,int targetIndex, btScalar init_vx,btScalar x_dec);
+	void randomMoveCanons();
+
+	void getFinalPos(btTransform* target,unsigned int targetIndex, btScalar init_vx,btScalar x_dec);
 	
 	void setVelocityTarget(btScalar time,btRigidBody* target,btScalar x);
 		
@@ -74,13 +105,18 @@ public:
 
 	void reset();
 
+	void shuffleV();
 	void gameStatus();	
 	void reportScoreInfo();
 	const char* ballValue(Object* ball);
-	
+	void changeParam();
+	void inPauseMode();
+
 	void logDynamic();
+	void saveLogDynamic();
 	string stringFromBtvector(btVector3* vec);
 	string colorFromScore(int score);
+	
 
 	Logger m_log;
 	Physic m_physic;
@@ -91,15 +127,16 @@ public:
 	
 	btRigidBody * cursors[NB_DEVICES_MAX];
 	btVector3 m_cursorColors[NB_DEVICES_MAX];
-	btVector3 m_impactPossible[ThronNumber];	
+	btVector3 m_impactPossible[ThronNumber];
 
+	vector <struct log_dyn*> m_logsVec;
 	vector <btScalar> m_throwed_xv;
 	vector <float> m_throwed_x;
 	vector <Object *> m_throwed_object_list;
 	vector <btRigidBody *> m_throwed_rigid_list;
 	vector <btTransform*> m_throwed_transform;	
 	vector <btVector3*> m_trajectory[ThronNumber];
-	int m_goodToCatch[ThronNumber];
+	btScalar m_throwVelocity[ThrowV];
 	int m_score;
 	int m_lancerNbr;
 	int m_catchs;
@@ -118,14 +155,25 @@ public:
 	btScalar m_impactY;	
 	Object* m_canons[canonNbr];
 	btCollisionShape* m_canonShape;	
-	int m_CanonPos[canonNbr];	
+	btScalar m_CanonPos[canonNbr];	
 	time_t m_time;
 	time_t m_log_time;
+	time_t m_adaptationTime; 
 	string m_note;
 	int m_throw_at_once;
 	bool m_eval;
 	bool m_withTraj;
 	bool m_feed;
 	int m_left_to_launch;
+	bool m_startLog;
+	bool m_timerBegan;
+	bool m_Fin_jeu;
+	bool m_wait;
+	time_t m_waitTime;
+	int m_passe;
+	btScalar m_actualV;
+	int m_vIndex;
+	WORD m_log_milis;
+	btScalar m_canon_step;
 	Object* m_effObj;
 };

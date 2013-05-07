@@ -11,6 +11,7 @@
 #define FLT_2_PI 6.283185307f
 #define PI 3.14
 const GLfloat black[3] = {0.1,0.1,0.1};
+const int waitShow = 5;
 
 class Renderer
 {
@@ -46,7 +47,7 @@ public:
 
 	void setText(std::string* text);
 	void WriteStatus(std::string* text);
-	void setPoints(std::vector<btVector3*>* points, int index);
+	void setPoints(std::vector<btVector3*>* points, int index, btVector3* color);
 	void infoGame();
 	void clearPoints();
 	void selectedSphere(const btScalar & radius,bool show);
@@ -57,6 +58,21 @@ public:
 
 	void distanceLine(btVector3* start, int stop, GLfloat);
 	void setRepaire(int r);
+	void StartMessage();
+	void showStart(bool info,int time);
+	void showFeedBack(bool with);
+	void printFeed();
+	void setDir(btVector3* depart, btVector3* arrivee);
+	void setLeftToThrow(const char * time);
+	void showLeftToThrow();
+	void stopShowTime();
+	void renderDir();
+	void printFin();
+	void setFin();
+	void setWait(int time);
+	void showWait();
+	void stopWait();
+
 private:
 
 	//GL_ShapeDrawer m_shapedrawer; 
@@ -73,12 +89,26 @@ private:
 	unsigned int m_texturehandle;
 	std::vector<Object *> m_objects;
 	std::vector <btVector3*> m_points[ThronNumber];
+	btVector3 m_traj_color[ThronNumber];
 	GLfloat m_lightPos[3];
 	GLfloat m_wireColor[3];
 	GLfloat m_clearColor[3];
 	GLfloat m_matDiffuse[4];
 	GLfloat m_matAmbient[4];
 	bool m_oultines;
+	bool m_InformeStart;
+	int m_leftToStart;
+	bool m_showFeed;
+	bool m_feedback;
+	time_t m_timer;
 	std::string* m_text;
+	bool m_dirset;
+	bool m_beforeThrow;
+	bool m_finJeu;
+	bool m_waitMode;
+	int m_waitTime;
+	std::string m_throwText;
+	btVector3 m_cursor;
+	btVector3 m_fleche;
 	GLfloat m_repaire;
 };

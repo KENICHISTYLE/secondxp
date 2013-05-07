@@ -1,0 +1,1455 @@
+# Game Session ID 
+0 
+### Session Start ### 
+########  Status at	 20:34:26 ------------------ ##### 
+# Effector position  -0.00229153 -0.00229153 -0.00229153
+# Vitesse de depart 30
+########  Status at	 20:34:28 ------------------ ##### 
+# Effector position  -0.96813 -0.96813 -0.96813
+# Ball 0
+# Position  10 10 10
+# Color  Red
+# Value 20
+# Ball 1
+# Position  0.999997 0.999997 0.999997
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  8 8 8
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:29 ------------------ ##### 
+# Effector position  -1.99595 -1.99595 -1.99595
+# Ball 0
+# Position  7.56999 7.56999 7.56999
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -2.78096 -2.78096 -2.78096
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  8 8 8
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 2
+# Color  Blue
+# Value 10
+# Actuel score 10
+# Actuel caught number 1
+# Actuel Good caught balls 0
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 1
+########  Status at	 20:34:30 ------------------ ##### 
+# Effector position  1.23208 1.23208 1.23208
+# Ball 0
+# Position  4 4 4
+# Color  Red
+# Value 20
+# Ball 1
+# Position  0 0 0
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -4 -4 -4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:32 ------------------ ##### 
+# Effector position  6.05695 6.05695 6.05695
+# Ball 0
+# Position  6.031 6.031 6.031
+# Color  Red
+# Value 20
+# Ball 1
+# Position  0 0 0
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  14.031 14.031 14.031
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  0.0619999 0.0619999 0.0619999
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:32 ------------------ ##### 
+# Effector position  6.07345 6.07345 6.07345
+# Ball 0
+# Position  6.16258 6.16258 6.16258
+# Color  Red
+# Value 20
+# Ball 1
+# Position  0 0 0
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  14.182 14.182 14.182
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  0.364 0.364 0.364
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 30
+# Actuel caught number 2
+# Actuel Good caught balls 1
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 1
+########  Status at	 20:34:34 ------------------ ##### 
+# Effector position  4.67912 4.67912 4.67912
+# Ball 0
+# Position  -2.134 -2.134 -2.134
+# Color  Red
+# Value 20
+# Ball 1
+# Position  9.201 9.201 9.201
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  7.067 7.067 7.067
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -9.866 -9.866 -9.866
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  4.933 4.933 4.933
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:35 ------------------ ##### 
+# Effector position  0.466817 0.466817 0.466817
+# Ball 0
+# Position  0.139445 0.139445 0.139445
+# Color  Red
+# Value 20
+# Ball 1
+# Position  5.505 5.505 5.505
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  5.835 5.835 5.835
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -12.33 -12.33 -12.33
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  6.165 6.165 6.165
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 50
+# Actuel caught number 3
+# Actuel Good caught balls 2
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 1
+########  Status at	 20:34:36 ------------------ ##### 
+# Effector position  0.0998771 0.0998771 0.0998771
+# Ball 0
+# Position  1.90946 1.90946 1.90946
+# Color  Red
+# Value 20
+# Ball 1
+# Position  3.207 3.207 3.207
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  5.069 5.069 5.069
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -13.862 -13.862 -13.862
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  6.931 6.931 6.931
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:38 ------------------ ##### 
+# Effector position  7.66347 7.66347 7.66347
+# Ball 0
+# Position  8 8 8
+# Color  Red
+# Value 20
+# Ball 1
+# Position  7.764 7.764 7.764
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -13.646 -13.646 -13.646
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -1.882 -1.882 -1.882
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -2.118 -2.118 -2.118
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:38 ------------------ ##### 
+# Effector position  7.76482 7.76482 7.76482
+# Ball 0
+# Position  8.01353 8.01353 8.01353
+# Color  Red
+# Value 20
+# Ball 1
+# Position  8.264 8.264 8.264
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -14.396 -14.396 -14.396
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -2.132 -2.132 -2.132
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -1.868 -1.868 -1.868
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 70
+# Actuel caught number 4
+# Actuel Good caught balls 3
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 1
+########  Status at	 20:34:40 ------------------ ##### 
+# Effector position  4.33734 4.33734 4.33734
+# Ball 0
+# Position  -3.266 -3.266 -3.266
+# Color  Red
+# Value 20
+# Ball 1
+# Position  4 4 4
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  8 8 8
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -9.468 -9.468 -9.468
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  13.468 13.468 13.468
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:41 ------------------ ##### 
+# Effector position  -1.87969 -1.87969 -1.87969
+# Ball 0
+# Position  -1.81736 -1.81736 -1.81736
+# Color  Red
+# Value 20
+# Ball 1
+# Position  4 4 4
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  8 8 8
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -12.302 -12.302 -12.302
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  16.302 16.302 16.302
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 90
+# Actuel caught number 5
+# Actuel Good caught balls 4
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 1
+########  Status at	 20:34:42 ------------------ ##### 
+# Effector position  -1.5736 -1.5736 -1.5736
+# Ball 0
+# Position  -1.45837 -1.45837 -1.45837
+# Color  Red
+# Value 20
+# Ball 1
+# Position  4 4 4
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  8 8 8
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -13.472 -13.472 -13.472
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  17.472 17.472 17.472
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:44 ------------------ ##### 
+# Effector position  -2.08302 -2.08302 -2.08302
+# Ball 0
+# Position  -1.666 -1.666 -1.666
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -11.332 -11.332 -11.332
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -0.668001 -0.668001 -0.668001
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  15.332 15.332 15.332
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  2.334 2.334 2.334
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  9.666 9.666 9.666
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:46 ------------------ ##### 
+# Effector position  -1.20994 -1.20994 -1.20994
+# Ball 0
+# Position  -3.018 -3.018 -3.018
+# Color  Red
+# Value 20
+# Ball 1
+# Position  13.964 13.964 13.964
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -5.054 -5.054 -5.054
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  9.96401 9.96401 9.96401
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:47 ------------------ ##### 
+# Effector position  -1.23757 -1.23757 -1.23757
+# Ball 0
+# Position  -1.95565 -1.95565 -1.95565
+# Color  Red
+# Value 20
+# Ball 1
+# Position  16.43 16.43 16.43
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -1.35499 -1.35499 -1.35499
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  12.43 12.43 12.43
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 110
+# Actuel caught number 1
+# Actuel Good caught balls 1
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:34:48 ------------------ ##### 
+# Effector position  4.2759 4.2759 4.2759
+# Ball 0
+# Position  2.61098 2.61098 2.61098
+# Color  Red
+# Value 20
+# Ball 1
+# Position  17.964 17.964 17.964
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  0.946006 0.946006 0.946006
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  13.9593 13.9593 13.9593
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:50 ------------------ ##### 
+# Effector position  2.647 2.647 2.647
+# Ball 0
+# Position  -2.032 -2.032 -2.032
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -4 -4 -4
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  14.032 14.032 14.032
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  4.952 4.952 4.952
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  -5.968 -5.968 -5.968
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:52 ------------------ ##### 
+# Effector position  -1.23529 -1.23529 -1.23529
+# Ball 0
+# Position  -10.632 -10.632 -10.632
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -1.316 -1.316 -1.316
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  9.316 9.316 9.316
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -4 -4 -4
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  10.684 10.684 10.684
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  1.368 1.368 1.368
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:52 ------------------ ##### 
+# Effector position  -2.23762 -2.23762 -2.23762
+# Ball 0
+# Position  -12.366 -12.366 -12.366
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -2.09865 -2.09865 -2.09865
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  10.183 10.183 10.183
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -4 -4 -4
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  9.817 9.817 9.817
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  -0.365999 -0.365999 -0.365999
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 2
+# Color  Blue
+# Value 10
+# Actuel score 120
+# Actuel caught number 2
+# Actuel Good caught balls 1
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 1
+########  Status at	 20:34:54 ------------------ ##### 
+# Effector position  1.02919 1.02919 1.02919
+# Ball 0
+# Position  -14.632 -14.632 -14.632
+# Color  Red
+# Value 20
+# Ball 1
+# Position  6.52674 6.52674 6.52674
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  11.316 11.316 11.316
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -3.99999 -3.99999 -3.99999
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  8.684 8.684 8.684
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  -2.632 -2.632 -2.632
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:56 ------------------ ##### 
+# Effector position  -3.42202 -3.42202 -3.42202
+# Ball 0
+# Position  -4.1 -4.1 -4.1
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -4 -4 -4
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  2.14999 2.14999 2.14999
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  1.95 1.95 1.95
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  7.9 7.9 7.9
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  13.95 13.95 13.95
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:56 ------------------ ##### 
+# Effector position  -3.40641 -3.40641 -3.40641
+# Ball 0
+# Position  -3.61742 -3.61742 -3.61742
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -4 -4 -4
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  1.35499 1.35499 1.35499
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  2.215 2.215 2.215
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  8.43 8.43 8.43
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  14.215 14.215 14.215
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 140
+# Actuel caught number 3
+# Actuel Good caught balls 2
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 1
+########  Status at	 20:34:58 ------------------ ##### 
+# Effector position  0.043469 0.043469 0.043469
+# Ball 0
+# Position  -4 -4 -4
+# Color  Red
+# Value 20
+# Ball 1
+# Position  11.666 11.666 11.666
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -0.334 -0.334 -0.334
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  4.334 4.334 4.334
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  8 8 8
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:34:59 ------------------ ##### 
+# Effector position  -3.76003 -3.76003 -3.76003
+# Ball 0
+# Position  -4 -4 -4
+# Color  Red
+# Value 20
+# Ball 1
+# Position  9.733 9.733 9.733
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -2.267 -2.267 -2.267
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  6.26701 6.26701 6.26701
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  8 8 8
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 160
+# Actuel caught number 1
+# Actuel Good caught balls 1
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:35:1 ------------------ ##### 
+# Effector position  1.07658 1.07658 1.07658
+# Ball 0
+# Position  0.545202 0.545202 0.545202
+# Color  Red
+# Value 20
+# Ball 1
+# Position  7.99999 7.99999 7.99999
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -4 -4 -4
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  7.93972 7.93972 7.93972
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  8 8 8
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:3 ------------------ ##### 
+# Effector position  4.00261 4.00261 4.00261
+# Ball 0
+# Position  9.45301 9.45301 9.45301
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -6.302 -6.302 -6.302
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  2.302 2.302 2.302
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -4.849 -4.849 -4.849
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:5 ------------------ ##### 
+# Effector position  2.72414 2.72414 2.72414
+# Ball 0
+# Position  11.402 11.402 11.402
+# Color  Red
+# Value 20
+# Ball 1
+# Position  7.701 7.701 7.701
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -4.299 -4.299 -4.299
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:7 ------------------ ##### 
+# Effector position  6.05266 6.05266 6.05266
+# Ball 0
+# Position  7.40199 7.40199 7.40199
+# Color  Red
+# Value 20
+# Ball 1
+# Position  5.701 5.701 5.701
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -6.299 -6.299 -6.299
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:9 ------------------ ##### 
+# Effector position  -0.298072 -0.298072 -0.298072
+# Ball 0
+# Position  0 0 0
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -8 -8 -8
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  6.728 6.728 6.728
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  13.364 13.364 13.364
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -2.636 -2.636 -2.636
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  6.636 6.636 6.636
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:9 ------------------ ##### 
+# Effector position  -0.0980687 -0.0980687 -0.0980687
+# Ball 0
+# Position  -0.0404399 -0.0404399 -0.0404399
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -8 -8 -8
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  8.396 8.396 8.396
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  14.198 14.198 14.198
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -1.802 -1.802 -1.802
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  5.802 5.802 5.802
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 180
+# Actuel caught number 2
+# Actuel Good caught balls 2
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:35:11 ------------------ ##### 
+# Effector position  1.07497 1.07497 1.07497
+# Ball 0
+# Position  -0.0479011 -0.0479011 -0.0479011
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -8 -8 -8
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  10.76 10.76 10.76
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  15.3576 15.3576 15.3576
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -0.620002 -0.620002 -0.620002
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  4.61999 4.61999 4.61999
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:13 ------------------ ##### 
+# Effector position  0.120992 0.120992 0.120992
+# Ball 0
+# Position  11.368 11.368 11.368
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -0.632001 -0.632001 -0.632001
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  15.368 15.368 15.368
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -3.368 -3.368 -3.368
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  7.368 7.368 7.368
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:13 ------------------ ##### 
+# Effector position  0.0955837 0.0955837 0.0955837
+# Ball 0
+# Position  12.5 12.5 12.5
+# Color  Red
+# Value 20
+# Ball 1
+# Position  0.630407 0.630407 0.630407
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  16.5 16.5 16.5
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -4.5 -4.5 -4.5
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  8.5 8.5 8.5
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 2
+# Color  Blue
+# Value 10
+# Actuel score 190
+# Actuel caught number 3
+# Actuel Good caught balls 2
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 1
+########  Status at	 20:35:15 ------------------ ##### 
+# Effector position  6.47561 6.47561 6.47561
+# Ball 0
+# Position  9.852 9.852 9.852
+# Color  Red
+# Value 20
+# Ball 1
+# Position  6.148 6.148 6.148
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -2.568 -2.568 -2.568
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  1.432 1.432 1.432
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  8.716 8.716 8.716
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:17 ------------------ ##### 
+# Effector position  0.579473 0.579473 0.579473
+# Ball 0
+# Position  -0.266001 -0.266001 -0.266001
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -4.266 -4.266 -4.266
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:17 ------------------ ##### 
+# Effector position  0.470774 0.470774 0.470774
+# Ball 0
+# Position  0.262947 0.262947 0.262947
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -3.532 -3.532 -3.532
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 210
+# Actuel caught number 1
+# Actuel Good caught balls 1
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:35:19 ------------------ ##### 
+# Effector position  2.42847 2.42847 2.42847
+# Ball 0
+# Position  8 8 8
+# Color  Red
+# Value 20
+# Ball 1
+# Position  2.2 2.2 2.2
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -2.8 -2.8 -2.8
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -7.4 -7.4 -7.4
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:20 ------------------ ##### 
+# Effector position  7.67724 7.67724 7.67724
+# Ball 0
+# Position  8.05646 8.05646 8.05646
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -2.696 -2.696 -2.696
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  0.463999 0.463999 0.463999
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -5.76799 -5.76799 -5.76799
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 230
+# Actuel caught number 2
+# Actuel Good caught balls 2
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:35:21 ------------------ ##### 
+# Effector position  -0.139457 -0.139457 -0.139457
+# Ball 0
+# Position  0.241007 0.241007 0.241007
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -5.39601 -5.39601 -5.39601
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  2.264 2.264 2.264
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -4.87757 -4.87757 -4.87757
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:23 ------------------ ##### 
+# Effector position  -1.02813 -1.02813 -1.02813
+# Ball 0
+# Position  -2 -2 -2
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -7 -7 -7
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -3 -3 -3
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  7 7 7
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  10 10 10
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  9 9 9
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:24 ------------------ ##### 
+# Effector position  0.161263 0.161263 0.161263
+# Ball 0
+# Position  0.295474 0.295474 0.295474
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -5.83399 -5.83399 -5.83399
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -6.498 -6.498 -6.498
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  10.498 10.498 10.498
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  7.66799 7.66799 7.66799
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  10.166 10.166 10.166
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 250
+# Actuel caught number 3
+# Actuel Good caught balls 3
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:35:25 ------------------ ##### 
+# Effector position  1.21887 1.21887 1.21887
+# Ball 0
+# Position  1.45754 1.45754 1.45754
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -4.95099 -4.95099 -4.95099
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -9.147 -9.147 -9.147
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  13.1302 13.1302 13.1302
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  5.90199 5.90199 5.90199
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  11.049 11.049 11.049
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:27 ------------------ ##### 
+# Effector position  4.44367 4.44367 4.44367
+# Ball 0
+# Position  6.583 6.583 6.583
+# Color  Red
+# Value 20
+# Ball 1
+# Position  2.834 2.834 2.834
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  1.166 1.166 1.166
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  10.583 10.583 10.583
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  -1.166 -1.166 -1.166
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:27 ------------------ ##### 
+# Effector position  5.6495 5.6495 5.6495
+# Ball 0
+# Position  5.82551 5.82551 5.82551
+# Color  Red
+# Value 20
+# Ball 1
+# Position  4.332 4.332 4.332
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  -0.331999 -0.331999 -0.331999
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  9.834 9.834 9.834
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  0.331999 0.331999 0.331999
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 270
+# Actuel caught number 4
+# Actuel Good caught balls 4
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:35:29 ------------------ ##### 
+# Effector position  0.905771 0.905771 0.905771
+# Ball 0
+# Position  8 8 8
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -4 -4 -4
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  12 12 12
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:31 ------------------ ##### 
+# Effector position  1.54493 1.54493 1.54493
+# Ball 0
+# Position  1.853 1.853 1.853
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -6.04901 -6.04901 -6.04901
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  7.90199 7.90199 7.90199
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -2.049 -2.049 -2.049
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:31 ------------------ ##### 
+# Effector position  1.50522 1.50522 1.50522
+# Ball 0
+# Position  1.65901 1.65901 1.65901
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -6.11601 -6.11601 -6.11601
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  7.76799 7.76799 7.76799
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -2.116 -2.116 -2.116
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  -8 -8 -8
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 290
+# Actuel caught number 5
+# Actuel Good caught balls 5
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:35:33 ------------------ ##### 
+# Effector position  6.95405 6.95405 6.95405
+# Ball 0
+# Position  12 12 12
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -7.048 -7.048 -7.048
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -6.984 -6.984 -6.984
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  5.968 5.968 5.968
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:34 ------------------ ##### 
+# Effector position  11.6051 11.6051 11.6051
+# Ball 0
+# Position  12.1339 12.1339 12.1339
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -10.402 -10.402 -10.402
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -5.866 -5.866 -5.866
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  3.732 3.732 3.732
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 310
+# Actuel caught number 1
+# Actuel Good caught balls 1
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0
+########  Status at	 20:35:35 ------------------ ##### 
+# Effector position  -0.844739 -0.844739 -0.844739
+# Ball 0
+# Position  -1.13208 -1.13208 -1.13208
+# Color  Red
+# Value 20
+# Ball 1
+# Position  -13.3 -13.3 -13.3
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  -4.9088 -4.9088 -4.9088
+# Color  Yellow
+# Value -10
+# Ball 4
+# Position  1.80001 1.80001 1.80001
+# Color  Yellow
+# Value -10
+# Ball 5
+# Position  4 4 4
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:37 ------------------ ##### 
+# Effector position  -2.34996 -2.34996 -2.34996
+# Ball 0
+# Position  -0.650002 -0.650002 -0.650002
+# Color  Red
+# Value 20
+# Ball 1
+# Position  8 8 8
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  7.35 7.35 7.35
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+########  Status at	 20:35:37 ------------------ ##### 
+# Effector position  -2.41362 -2.41362 -2.41362
+# Ball 0
+# Position  -2.35256 -2.35256 -2.35256
+# Color  Red
+# Value 20
+# Ball 1
+# Position  8 8 8
+# Color  Blue
+# Value 10
+# Ball 2
+# Position  0 0 0
+# Color  Yellow
+# Value -10
+# Ball 3
+# Position  5.649 5.649 5.649
+# Color  Yellow
+# Value -10
+# Vitesse de depart 30
+# A ball was caught 
+# Ball 1
+# Color  Red
+# Value 20
+# Actuel score 330
+# Actuel caught number 2
+# Actuel Good caught balls 2
+# Actuel of Bad caught balls 0
+# Actuel of  Ok caught balls 0

@@ -110,7 +110,7 @@ void Camera::lookAt()
 	btScalar m[16];
 	view.getOpenGLMatrix(m);
 	glMultMatrixf(m);
-	glTranslatef(-m_eye.getX(),-m_eye.getY()+8,-m_eye.getZ());
+	glTranslatef(-m_eye.getX(),-m_eye.getY()+6,-m_eye.getZ());
 	m_view.setBasis(basis);
 	m_view.setOrigin(m_eye);
 	/*gluLookAt(	m_eye.getX(),m_eye.getY(),m_eye.getZ(),

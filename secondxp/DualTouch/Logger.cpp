@@ -69,21 +69,38 @@ void Logger::dynamicBegin(){
 
 		if(file != NULL){
 			endOffile(file);
-			fprintf_s(file,"########  Status at\t");
+			fprintf_s(file,"########  Status report at\t");
 
-			struct tm datetime;
-			time_t now;
+			struct myTime t = getCurrent();
 
-			time(&now);
-
-			localtime_s(&datetime, &now);
-
-			fprintf_s(file," %d:%d:%d ------------------ ##### \n",datetime.tm_hour,datetime.tm_min,datetime.tm_sec);
+			fprintf_s(file," %d:%d:%d:%d ------------------ ##### \n",t.hh,t.mm,t.ss,t.mil);
 		}
 
 
 		m_dynamic_log = file;
 	}
+}
+
+struct myTime Logger::getCurrent(){
+	SYSTEMTIME stime;
+	GetSystemTime(&stime);
+	WORD millis = stime.wMilliseconds;
+
+	struct tm datetime;
+	time_t now;
+
+	time(&now);
+
+	localtime_s(&datetime, &now);
+
+	struct myTime t;
+
+	t.hh = datetime.tm_hour ; 
+	t.mm = datetime.tm_min;
+	t.ss = datetime.tm_sec;
+	t.mil = millis;
+
+	return t;
 }
 
 void Logger::dynamicWrite(const char* log){

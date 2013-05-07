@@ -11,12 +11,20 @@
 
 using namespace std;
 
+struct myTime{
+		int hh;
+		int mm;
+		int ss;
+		int mil;
+};
+
 class Logger 
 {
 
 public:
 	Logger();
 	~Logger(void); 
+		
 
 	void init();
 	void setBeginTime();
@@ -39,6 +47,7 @@ public:
 	void dynamicWrite(const char* log);
 	void dynamicEnd();
 
+	struct myTime getCurrent();	
 	void printOptions(FILE* file);
 	void setOption(char option,bool value);
 	char* printBool(bool value);	

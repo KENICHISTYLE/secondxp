@@ -5,7 +5,11 @@
 #include "BulletCollision/CollisionShapes/btSphereShape.h"
 #include "BulletCollision/CollisionShapes/btCylinderShape.h"
 #include "BulletCollision/CollisionShapes/btShapeHull.h"
+#include <iostream>
+#include <sstream>
+#include <ctime>
 
+using namespace std;
 // cube ///////////////////////////////////////////////////////////////////////
 //    v6----- v5
 //   /|      /|
@@ -49,10 +53,17 @@ Renderer::Renderer(void)
 
 	for(int i = 0; i < ThronNumber;i++)
 		m_points[i].clear();
-	m_text = new std::string(" Hello ");
+	m_text = new std::string("");
 	m_oultines =true;
 	m_shapecaches.clear();
-	m_repaire = 0;
+	m_repaire = 0;	
+	m_InformeStart = false;
+	m_showFeed = false;
+	m_feedback = false;
+	m_timer = time(NULL);
+	m_dirset = false;
+	m_beforeThrow = false;
+	m_finJeu = false;
 }
 
 Renderer::~Renderer(void)
@@ -114,7 +125,7 @@ void Renderer::init()
 {
 	m_matDiffuse[0] = 0.6f;m_matDiffuse[1] = 0.6f;m_matDiffuse[2] = 0.6f;m_matDiffuse[3] = 1.0f;
 	m_matAmbient[0] = 0.5f;m_matAmbient[1] = 0.5f;m_matAmbient[2] = 0.5f;m_matAmbient[3] = 1.0f;
-
+	
 	GLfloat m_lightDiffuse[] = {0.6f,0.6f,0.6f};
 	GLfloat m_lightAmbient[] = {0.5f,0.5f,0.5f,1.0f};
 	GLfloat m_lightSpecular[] = {0.0f,0.0f,0.0f,1.0f};
@@ -213,11 +224,13 @@ void Renderer::display()
 	
 	drawSky();
 
-	for(int k = -10; k <= 10; k+=5)  
-		distanceLine(&btVector3(k,m_repaire,0.01),(int)(m_repaire *3), 0.5);	
+	for(int k = -20; k <= 20; k+=5)  
+		distanceLine(&btVector3(k,m_repaire,0.01),(int)(m_repaire *5), 0.5);	
 
 	// show trajectory if object thrown
 	renderTrajectory();
+
+	renderDir();
 
 	glLightfv(GL_LIGHT0, GL_POSITION, m_lightPos);
 	//glEnable(GL_LIGHTING);
@@ -291,7 +304,6 @@ void Renderer::display()
 	
 }
 
-
 void Renderer::renderScene()
 { 
 	
@@ -361,7 +373,7 @@ void Renderer::renderScene()
 
 					btVector3 trans = myTrans.getOrigin();					
 
-					btQuaternion rot = myTrans.getRotation();						
+					btQuaternion rot = myTrans.getRotation();								
 
 					myTrans.setOrigin(btVector3(0,0,0));
 
@@ -382,11 +394,11 @@ void Renderer::renderScene()
 
 						//glPushMatrix();    
 						    
-							//glTranslatef(0.0, -0.5f*height , 0.0);
-
+							glTranslatef(0.0, -0.5f*height , 0.0);
+										
 							//glMultMatrixf(mat);		
 
-							//coneShadow(radius,height);
+							coneShadow(radius,height);
 	
 						//glPopMatrix();
 
@@ -557,21 +569,46 @@ void Renderer::drawCone(const btScalar & radius , const btScalar & height)
 void Renderer::coneShadow(const btScalar & radius , const btScalar & height){
 	int slices = 26;
 	glDisable(GL_LIGHTING);
-	//circle(radius,false,true);
+	glColor3f(0.2,0.2,0.2);
+	circle(radius,false,true);
 	//glutSolidCone(radius,height,slices,2);	
 
-	glBegin(GL_LINE_LOOP);
+	/*glBegin(GL_LINE_LOOP);
 			for(int k = 0; k < 90; k+=1){
 				GLfloat angle = 2 * PI * k / 180;
 				GLfloat x = radius*cos((double)-angle);
 				GLfloat y = radius*sin((double)-angle);
 				glVertex3f(0,0,height);
-				glVertex2f(x,y);
+				glVertex3f(x,y,0);
 				glVertex3f(0,0,0);
 			}
 	 glEnd();
-
+*/
 	glEnable(GL_LIGHTING);
+}
+
+void Renderer::setDir(btVector3* depart, btVector3* arrivee){
+	m_cursor = *depart;
+	m_fleche = *arrivee;
+	m_dirset = true;
+}
+
+void Renderer::renderDir(){
+	if(m_dirset){
+		glDisable(GL_LIGHTING);
+		
+			glColor3fv(green);
+			glLineWidth(2.0);
+			glBegin(GL_LINE_LOOP);
+				glVertex3f(m_cursor.x(),m_cursor.y(),m_cursor.z());
+				glVertex3f(m_fleche.x(),m_fleche.y(),m_fleche.z());
+			glEnd();
+			glLineWidth(2.0);
+			drawPoint(m_fleche.x(),m_fleche.y(),m_fleche.z());
+
+	    glEnable(GL_LIGHTING);
+		m_dirset = false;
+	}
 }
 
 void Renderer::drawCylinder(const btScalar & radius,const btScalar & halfHeight,int upAxis)
@@ -730,7 +767,7 @@ void Renderer::distanceLine(btVector3* start, int stop,GLfloat size){
 
 	glDisable(GL_LIGHTING);
 
-	glColor3fv(light_Grey);
+	glColor3fv(orange);
 
 	for(int i = 0; i<stop; i++){
 
@@ -841,11 +878,12 @@ void Renderer::drawSky()
 
 void Renderer::renderTrajectory(){
 	glDisable(GL_LIGHTING);
-	glColor3f(0.2,0.2,0.2);
+	
 
 	glLineWidth(0.8);
 	for (int j = 0; j < ThronNumber;j++)			
-		if(m_points[j].size()>0){			
+		if(m_points[j].size()>0){	
+			glColor3fv(m_traj_color[j]);
 			for(unsigned int i =0 ;i< (m_points[j].size());i++){	
 				if( i % 6 == 0){
 					drawPoint((m_points[j])[i]->getX(), 
@@ -858,7 +896,7 @@ void Renderer::renderTrajectory(){
 }
 
 void Renderer::drawPoint(GLfloat x, GLfloat y, GLfloat z){	
-	GLfloat c = 0.04;
+	GLfloat c = 0.06;
 	//glPointSize(0.001);
 
 	glBegin(GL_LINES);	
@@ -877,7 +915,8 @@ void Renderer::drawPoint(GLfloat x, GLfloat y, GLfloat z){
 	glEnd();*/
 }
 
-void Renderer::setPoints(std::vector<btVector3*>* points, int index){
+void Renderer::setPoints(std::vector<btVector3*>* points, int index, btVector3* color){
+	m_traj_color[index] = *color;
 	for(unsigned int i = 0 ; i < points->size(); i++)
 		m_points[index].push_back((*points)[i]);
 }
@@ -889,7 +928,7 @@ void Renderer::clearPoints(){
 
 void Renderer::WriteStatus(std::string* text){	
 	glEnter2D();
-	glWrite(10, 20, GLUT_BITMAP_HELVETICA_12, text );
+	glWrite(10 , glGetViewportHeight() - 120 , GLUT_BITMAP_9_BY_15, text );
 	glLeave2D();
 }
 
@@ -949,28 +988,145 @@ void Renderer::setText(std::string* text){
 void Renderer::infoGame(){
 
 	glDisable(GL_LIGHTING);	
+	
+	if(!m_finJeu){
+		glColor3fv(black);
 
-	glColor3fv(black);
+		printText(); 
 
-	printText(); 
+		glEnter2D();	
 
-	glEnter2D();	
+		glWrite(10, glGetViewportHeight() - 20, GLUT_BITMAP_9_BY_15, &(std::string(" Points par couleur : ")));	
 
-	glWrite(10, glGetViewportHeight() - 20, GLUT_BITMAP_HELVETICA_12, &(std::string(" Points par couleur : ")));	
+		glColor3fv(red);
 
-	glColor3fv(red);
+		glWrite(20, glGetViewportHeight() - 50, GLUT_BITMAP_HELVETICA_18, &(std::string("Rouge   ==>  20")));
 
-	glWrite(15, glGetViewportHeight() - 45, GLUT_BITMAP_HELVETICA_12, &(std::string(" Rouge    ==>  20  ")));
+		glColor3fv(light_blue);
 
-	glColor3fv(light_blue);
+		glWrite(20, glGetViewportHeight() - 70,  GLUT_BITMAP_HELVETICA_18, &(std::string("Bleu    ==>  10")));
 
-	glWrite(15, glGetViewportHeight() - 60, GLUT_BITMAP_HELVETICA_12, &(std::string(" Bleu      ==>  10  ")));
-
-	glColor3fv(yellow);
+		glColor3fv(yellow);
 	 
-	glWrite(15, glGetViewportHeight() - 75, GLUT_BITMAP_HELVETICA_12, &(std::string(" Jaune    ==> -10  ")));
+		glWrite(20, glGetViewportHeight() - 90,  GLUT_BITMAP_HELVETICA_18, &(std::string("Jaune   ==> -10")));
 
-	glLeave2D();
+		if(m_InformeStart )
+			StartMessage();
+
+		printFeed();
+
+		showLeftToThrow();
+
+		showWait();
+
+		glLeave2D();
+
+	}else
+		printFin();	
 
 	glEnable(GL_LIGHTING);				
+}
+
+void Renderer::StartMessage(){
+	std::string s;
+	glColor3fv(light_blue);
+	if(m_leftToStart != -1){
+
+		glColor3fv(light_blue);
+
+		s = " Game Start in :  "; 
+
+		std::ostringstream oss;
+		oss << m_leftToStart;
+
+		s += oss.str();
+
+		glWrite(glGetViewportWidth()/2 -100 , glGetViewportHeight()/2 +100, GLUT_BITMAP_TIMES_ROMAN_24, &s);
+	}else{
+		s = " Tutorial " ;
+		glWrite(glGetViewportWidth()/2 -100 , glGetViewportHeight() - 50 , GLUT_BITMAP_TIMES_ROMAN_24, &s);
+	}		
+	
+}
+
+void Renderer::showStart(bool info,int time){
+	m_leftToStart = time;
+	m_InformeStart  = info;
+}
+
+void Renderer::showFeedBack(bool with){
+	m_feedback = with;
+	m_showFeed = true;
+	m_timer = time(NULL);
+}
+
+void Renderer::printFeed(){
+	if(m_showFeed){
+		time_t now = time(NULL);
+		time_t time = now - m_timer;
+		if(time  < waitShow){
+			std::string s;
+			if(m_feedback)
+				s = " Avec retour haptique ";
+			else
+				s = " Sans retour haptique ";
+			glColor3fv(light_blue);
+			glWrite(glGetViewportWidth()/2 -100 , glGetViewportHeight()/2 + 50, GLUT_BITMAP_TIMES_ROMAN_24, &s);
+		}else
+			m_showFeed = false;
+	}
+}
+
+void Renderer::setLeftToThrow(const char * time){
+	m_beforeThrow = true;
+	m_throwText = time;
+}
+
+void Renderer::showLeftToThrow(){
+	if(m_beforeThrow){
+
+		glColor3fv(light_blue);
+		glWrite(glGetViewportWidth()/2 -150 , glGetViewportHeight()/2, GLUT_BITMAP_TIMES_ROMAN_24, &m_throwText);
+
+	}
+}
+
+void Renderer::stopShowTime(){
+	m_beforeThrow = false;
+}
+
+void Renderer::printFin(){
+	
+		glEnter2D();	
+		glColor3fv(light_blue);
+		std::string s = " Fin du jeu .";
+		glWrite(glGetViewportWidth()/2 -50 , glGetViewportHeight()/2 + 100, GLUT_BITMAP_TIMES_ROMAN_24, &s);
+		glLeave2D();
+}
+
+void Renderer::setFin(){
+	m_finJeu = true;
+}
+
+void Renderer::setWait(int time){
+	m_waitMode = true;
+	m_waitTime = time;
+}
+
+void Renderer::showWait(){
+	if(m_waitMode){
+		std::string s = " Wait for :  "; 
+
+		std::ostringstream oss;
+		oss << m_waitTime;
+
+		s += oss.str();
+		
+		glWrite(glGetViewportWidth()/2 -50 , glGetViewportHeight() - 100 , GLUT_BITMAP_TIMES_ROMAN_24, &s);
+	}
+}
+
+
+void Renderer::stopWait(){
+	m_waitMode = false;
 }

@@ -1,4 +1,5 @@
 #include "WindowsManager.h"
+#include <Windows.h>
 
 WindowsManager::WindowsManager(void)
 {
@@ -7,7 +8,7 @@ WindowsManager::WindowsManager(void)
 	//m_subWindow = true
 	m_subWindow = false;
 	m_fullScreen = false;
-	m_width = IntialSize * 14/9;
+	m_width = IntialSize* 16/9;
 	m_height = IntialSize ;
 	getDesktopResolution();
 	m_previous = 0;
@@ -29,7 +30,7 @@ void WindowsManager::createWindows(int argc, char** argv)
 
 	glutInitWindowSize(m_width,m_height); 
 
-	m_window1 = glutCreateWindow("Haptic launch"); 
+	m_window1 = glutCreateWindow(" Haptic Game "); 
 	glutPositionWindow(IntialPosition,IntialPosition); 
 
 	m_dt.init1();
@@ -325,7 +326,8 @@ void WindowsManager::keyboardAll(unsigned char key)
 	case(27):	//glutDestroyWindow(m_window2);//Escape	
 		        glutIdleFunc(0);
 				glutEntryFunc(0);
-				glutDestroyWindow(m_window1);		
+				glutDestroyWindow(m_window1);	
+				m_dt.m_hds.freeIf();				
 				exit(0);
 				break;
 	}

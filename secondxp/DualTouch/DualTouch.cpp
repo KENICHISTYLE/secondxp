@@ -11,8 +11,7 @@ DualTouch::~DualTouch(void)
 	deleteThrowedObjects();
 	m_effObj->m_transform = NULL;
 	//m_hds.m_ptr = NULL;
-	//delete m_canonShape;
-
+	//delete m_canonShape;	
 	printf(" Dual Touch Done . \n");
 }
 
@@ -27,6 +26,7 @@ void DualTouch::init1()
 	m_lunch_y = 30;
 	m_time = time(NULL);	
 	m_log_time = time(NULL);
+	m_adaptationTime = time(NULL);
 	m_catchs = 0;
 	m_lancerNbr = 0;
 	m_note = "";
@@ -38,7 +38,13 @@ void DualTouch::init1()
 	m_bad_catchs = 0;
 	m_ok_catchs = 0;
 	m_throw_at_once = 3;
-
+	m_startLog = false;
+	m_actualV = 0;
+	m_vIndex = 0;
+	m_Fin_jeu = false;
+	m_passe = 0;
+	m_log_milis = 0;
+	m_wait = true;
 	//m_leftToTrhow = ThronNumber;
 	m_renderer.init();
 	m_renderer.setRepaire(m_lunch_y);
@@ -46,10 +52,13 @@ void DualTouch::init1()
 	m_log.init();
 	m_log.setOption('f',m_feed);
 	m_log.setOption('t',m_withTraj);
-	m_camera1.moveTo(btVector3(0.0,-25,6));
+	m_renderer.showFeedBack(m_feed);
+	m_camera1.moveTo(btVector3(0.0,-35,6));
 	m_left_to_launch = Nbr_launch_game;
+	m_timerBegan = false;
+	m_waitTime = time(NULL);
 	//m_camera2.moveTo(btVector3(-0.5,-10,3));
-
+	//changeParam();
 	m_hds.addDevice("PHANToM",m_camera1.m_view);
 	//m_hds.addDevice("PHANToM 2",m_camera2.m_view);
 	m_hds.init();
@@ -114,11 +123,64 @@ void DualTouch::addLauncher(){
 		m_canons[i] = m_renderer.addObject(new Object(m_canonShape,t,dark_Grey));			
 	}  
 	
+	 m_canon_step = 0.05;
+
+	 for(int i = 0; i< ThrowV; i++)
+		 m_throwVelocity[i] = (i+1) * 6;
+
+	 shuffleV();
 }
+
+void DualTouch::shuffleV(){
+	//shuffle velocities
+	for(int i = 0; i< ThrowV; i++){
+		 int r = i + (rand() % (ThrowV-i)); // Random remaining position.
+		 btScalar temp = m_throwVelocity[i];
+		 m_throwVelocity[i] = m_throwVelocity[r];
+		 m_throwVelocity[r] = temp;
+	}
+}
+
+void DualTouch::randomMoveCanons(){
+	
+	
+	btScalar center = ((1)-canonNbr/2)*4;
+	if(abs(m_CanonPos[0]+ m_canon_step -center) > max_canon_dep)
+		m_canon_step = -m_canon_step;
+
+	for(int i = 0; i < canonNbr ; i++){
+
+		if( i % 2 == 0  ){
+			m_CanonPos[i] += m_canon_step;
+			m_canons[i]->getTransform()->getOrigin().setX(m_CanonPos[i]);
+		}else{
+			m_CanonPos[i] -= m_canon_step;
+			m_canons[i]->getTransform()->getOrigin().setX(m_CanonPos[i]);
+		}
+	}
+}
+
+void DualTouch::changeParam(){
+	if(m_feed){
+		m_feed = false;
+		m_withTraj = true;
+	}else{
+		m_feed = true;
+		m_withTraj = false;
+	}
+	m_log.setOption('f',m_feed);
+	m_log.setOption('t',m_withTraj);	
+	m_renderer.showFeedBack(m_feed);
+};
 
 void DualTouch::gameStatus(){
 	if(m_left_to_launch > 0){
 		m_left_to_launch--;
+
+		if(m_left_to_launch % ThrowV == 0){		
+			m_actualV = m_throwVelocity[m_vIndex];
+			m_vIndex = (m_vIndex + 1 % ThrowV);
+		}
 
 		ostringstream oss;
 		oss << (int) (Nbr_launch_game - m_left_to_launch);
@@ -144,22 +206,45 @@ void DualTouch::gameStatus(){
 		return;
 	}	
 
+	
+	m_passe++;
+	if(m_passe >= 2)
+		m_Fin_jeu = true;
+	shuffleV();
 	reportScoreInfo();
+	m_vIndex = 0;
 	m_catchs = 0;
 	m_good_catchs = 0;
 	m_bad_catchs = 0;
 	m_ok_catchs = 0;
+	m_score = 0;
 	ostringstream oss;
 	oss << (unsigned int)m_throwed_rigid_list.size();
 	string s = "# Number of balls par throw "+ oss.str() + "\n" ;
 	m_log.saveToLogFile(s.c_str());
 	m_left_to_launch = Nbr_launch_game;
 	m_throw_at_once = 3;
-	m_log.setOption('f',m_feed);
-	m_log.setOption('t',m_withTraj);	
+	changeParam();	
 	m_log.saveEndInfo();
 	m_log.saveBeginInfo();
+	m_startLog = false;	
+	m_adaptationTime = time(NULL);
 	
+	  
+		if(m_Fin_jeu == true){			
+			m_renderer.setFin();			
+		}
+		else{
+			struct log_dyn* p = new struct log_dyn();
+			p->phase = true;
+			p->phaseNbr = m_passe;
+			p->currentTime = m_log.getCurrent();
+			m_logsVec.push_back(p);
+		}
+	
+
+	m_waitTime = time(NULL);
+	m_wait = true;
 }
 
 const char* DualTouch::ballValue(Object* ball){
@@ -208,40 +293,6 @@ void DualTouch::reportScoreInfo(){
 
 }
 
-void DualTouch::moveCanonLeft(btScalar x){
-	btTransform trans;	
-	//m_canon->getMotionState()->getWorldTransform(trans);
-	btVector3 t = trans.getOrigin();
-	trans.setOrigin(btVector3(t.x()-x,t.y(),t.z()));
-	//m_canon->getMotionState()->setWorldTransform(trans);
-}
-
-void DualTouch::moveCanonRight(btScalar x){
-	btTransform trans;	
-	//m_canon->getMotionState()->getWorldTransform(trans);
-	btVector3 t = trans.getOrigin();
-	trans.setOrigin(btVector3(t.x()+x,t.y(),t.z()));
-	//m_canon->getMotionState()->setWorldTransform(trans);
-}
-
-void DualTouch::teleportX(Object* canon,btScalar x){
-	btTransform trans;		
-	trans = *(canon->getTransform());
-	btVector3 t = trans.getOrigin();
-	trans.setOrigin(btVector3(x,t.y(),t.z()));	
-	canon->setTransform(trans);
-}
-
-void DualTouch::rotateCanon(btVector3* rotate){
-	btTransform myTrans = btTransform();
-//	m_canon->getMotionState()->getWorldTransform(myTrans);
-//	btQuaternion rot = myTrans.getRotation();
-//	btScalar alpha = asin(rotate->x()/rotate->z())*(PI/180);
-//	rot.setX(rotate->x());
-//	myTrans.setRotation(rot);
-//	m_canon->getMotionState()->setWorldTransform(myTrans);
-}
-
 void DualTouch::createCursor(unsigned int deviceId)
 {
 	btCollisionShape * shape = new btSphereShape(Effector_Size);
@@ -282,10 +333,10 @@ void DualTouch::throwMultiObject(btScalar Onumber, float canonPos, int index){
 		int r = Onumber;
 
 		//int z = (rand() % 10) + 1 ;
-		int y = (rand() % 3) ;
-		m_goodToCatch[index] = y;
+		//int y = (rand() % 3) ;
+		//m_goodToCatch[index] = y;
 		m_velocityZ = Gut_vz + 5;
-		m_velocityY = Gut_vy + 30; // + y;
+		m_velocityY = Gut_vy + m_actualV; 
 		
 
 		btVector3 targetpos1 = btVector3(canonPos+dec,m_lunch_y,m_lunch_z);
@@ -329,7 +380,7 @@ void DualTouch::throwMultiObject(btScalar Onumber, float canonPos, int index){
 		  case 0 :   obj = new Object(shape,t,light_red);
 			         obj->setScore(20);
 					 break;
-		  case 1 :  
+		  case 2 :  
 					 obj = new Object(shape,t,blue);
 					 obj->setScore(10);
 					 break;		  
@@ -365,7 +416,7 @@ void DualTouch::setTheTargetFinalPos(btRigidBody* target,btScalar initial_x){
 		//m_hds.setImpactPos(&final);
 }		
 // calculate trajectory and save final pos
-void DualTouch::getFinalPos(btTransform* target,int targetIndex, btScalar vx,  btScalar x_dec){
+void DualTouch::getFinalPos(btTransform* target,unsigned int targetIndex, btScalar vx,  btScalar x_dec){
 	float time = 0;	
 	int i = 0;
 	unsigned int j = 0;
@@ -397,7 +448,7 @@ void DualTouch::getFinalPos(btTransform* target,int targetIndex, btScalar vx,  b
 	}
 	
 	if(m_withTraj)
-		m_renderer.setPoints(&(m_trajectory[targetIndex]), targetIndex);
+		m_renderer.setPoints(&(m_trajectory[targetIndex]), targetIndex, &m_throwed_object_list[targetIndex]->m_color);
 	m_hds.setTrajectory(&(m_trajectory[targetIndex]), targetIndex, i);	
 }
 
@@ -468,7 +519,7 @@ void DualTouch::setAfterColideCoord(){
 			}
 		}
 			
-		m_renderer.setPoints(&(m_trajectory[index]), index);
+		//m_renderer.setPoints(&(m_trajectory[index]), index);
 		m_hds.setTrajectory(&(m_trajectory[index]), index, j);	
 		++index;
 	}
@@ -497,10 +548,7 @@ void DualTouch::deleteThrowedObjects(){
 			delete (m_trajectory[i])[j];
 		m_trajectory[i].clear();		
 	}
-	
-	for (int i = 0; i < ThronNumber; i++)
-		m_goodToCatch[i] = -1;
-
+		
 	  m_throwed_rigid_list.clear();
 	  m_throwed_object_list.clear();	
 	  m_throwed_transform.clear();	
@@ -612,177 +660,281 @@ string DualTouch::colorFromScore(int score){
 
 void DualTouch::logDynamic(){
 	// 
+	struct log_dyn* myLog = new struct log_dyn();
+	myLog->effcPosition = m_hds.getEffectorPosition();
+	myLog->vitesseLancer = m_velocityY;
+	myLog->currentTime = m_log.getCurrent();
+	for(unsigned int i =0; i < m_throwed_rigid_list.size(); i++){
+		myLog->throwed[i].pos = m_throwed_rigid_list[i]->getWorldTransform().getOrigin();
+		myLog->throwed[i].score = m_throwed_object_list[i]->getScore();
+	}
+
+	myLog->caught = m_hds.isCaught();
+
+	if(myLog->caught){
+		myLog->caughtValue = m_hds.getCaughtScore();
+		myLog->score = m_score;
+		myLog->catchNbr = m_catchs;
+		myLog->goodCatchNbr = m_good_catchs;
+		myLog->okCatchNbr = m_ok_catchs;
+		myLog->badCatchNbr = m_bad_catchs;		
+	}
+
+	m_logsVec.push_back(myLog);
+}
+
+void DualTouch::saveLogDynamic(){
+	if(m_logsVec.size() <= 0)
+		return;
 	m_log.dynamicBegin();
+	for(unsigned int st = 0; st < m_logsVec.size() ; st ++){
 
-	btVector3 temp = m_hds.getEffectorPosition();
-	string s = "# Effector position ";
-	s += stringFromBtvector(&temp);	
-	s += "\n";	
+		string s = "***** status at : ";
+		ostringstream oss;
+		oss << m_logsVec[st]->currentTime.hh;
+		s += oss.str() + ":";
+		oss.str("");
+		oss << m_logsVec[st]->currentTime.mm;
+		s += oss.str() + ":";
+		oss.str("");
+		oss << m_logsVec[st]->currentTime.ss;
+		s += oss.str() + ":";
+		oss.str("");
+		oss << m_logsVec[st]->currentTime.mil;
+		s += oss.str() + " **** \n";
+		oss.str("");
+		m_log.dynamicWrite(s.c_str());
 
-	m_log.dynamicWrite(s.c_str());
+		btVector3 temp = m_logsVec[st]->effcPosition;
+		s = "# Effector position ";
+		s += stringFromBtvector(&temp);	
+		s += "\n";	
+
+		m_log.dynamicWrite(s.c_str());
 	    
-	ostringstream oss;
+		
+		if(m_logsVec[st]->phase){
+			oss << m_logsVec[st]->phaseNbr;
+			s = "# Nouvelle phase numero " + oss.str() + "\n";
+			m_log.dynamicWrite(s.c_str());
+			oss.str("");
+		}
+		else{
+			for(unsigned int i =0; i < m_throwed_rigid_list.size(); i++)
+			{
+				oss << (unsigned int) i;
+				btVector3 temp = m_logsVec[st]->throwed[i].pos;
+				s = "# Ball " + oss.str() +"\n# Position ";
+				s += stringFromBtvector(&temp);
+				s+= "\n";
+				m_log.dynamicWrite(s.c_str());
 
-	for(unsigned int i =0; i < m_throwed_rigid_list.size(); i++)
-	{
-		oss << (unsigned int) i;
-		btVector3 temp = m_throwed_rigid_list[i]->getWorldTransform().getOrigin();
-		string s = "# Ball " + oss.str() +"\n# Position ";
-		s += stringFromBtvector(&temp);
-		s+= "\n";
-		m_log.dynamicWrite(s.c_str());
+				int score = m_logsVec[st]->throwed[i].score;
 
-		int score = m_throwed_object_list[i]->getScore();
-
-		s = "# Color ";
-		s += colorFromScore(score);
-		s += "\n";
-		m_log.dynamicWrite(s.c_str());
+				s = "# Color ";
+				s += colorFromScore(score);
+				s += "\n";
+				m_log.dynamicWrite(s.c_str());
 
 		
-		oss.str("");
-		oss << score;
-		s = "# Value " + oss.str() + "\n";
-		m_log.dynamicWrite(s.c_str());
-		oss.str("");
-	}
+				oss.str("");
+				oss << score;
+				s = "# Value " + oss.str() + "\n";
+				m_log.dynamicWrite(s.c_str());
+				oss.str("");
+			}
 
-	oss.str("");
-	oss << m_lunch_y;
-	s = "# Vitesse de depart " + oss.str() + "\n";
+			oss.str("");
+			oss << m_logsVec[st]->vitesseLancer;
+			s = "# Vitesse de depart " + oss.str() + "\n";
+			m_log.dynamicWrite(s.c_str());
+			oss.str("");
+		
+			if(m_logsVec[st]->caught){
+				m_log.dynamicWrite("## A ball was caught \n");
+				oss.str("");
+				int score = m_logsVec[st]->caughtValue;
+				oss << score;
+
+				s = "# Ball " + oss.str() +"\n# Color ";
+				s += colorFromScore(score);
+				s += "\n";
+				m_log.dynamicWrite(s.c_str());
+		
+				oss.str("");
+				oss << score;
+				s = "# Value " + oss.str() + "\n";
+				m_log.dynamicWrite(s.c_str());
+				oss.str("");
+
+				oss << m_logsVec[st]->score;
+				string s = "# Actuel score " + oss.str() + "\n";
+				m_log.dynamicWrite(s.c_str());
+				oss.str("");
+
+	
+				oss << m_logsVec[st]->catchNbr;
+				s = "# Actuel caught number " + oss.str() + "\n";
+				m_log.dynamicWrite(s.c_str());
+				oss.str("");
+
+	
+				oss << m_logsVec[st]->goodCatchNbr;
+				s= "# Actuel Good caught balls " +  oss.str() + "\n";
+				m_log.dynamicWrite(s.c_str());
+				oss.str("");
+
+				oss << m_logsVec[st]->badCatchNbr;
+				s= "# Actuel of Bad caught balls " +  oss.str() + "\n";
+				m_log.dynamicWrite(s.c_str());
+				oss.str("");
+
+				oss << m_logsVec[st]->okCatchNbr ;
+				s= "# Actuel of  Ok caught balls " +  oss.str() + "\n";
+				m_log.dynamicWrite(s.c_str());
+				oss.str("");
+			}
+		}
+		delete m_logsVec[st];
+	}
+	m_logsVec.clear();
+	string s= "###### Fin experiance ######## \n" ;
 	m_log.dynamicWrite(s.c_str());
-	oss.str("");
-		
-	if(m_hds.isCaught()){
-		m_log.dynamicWrite("# A ball was caught \n");
-		oss.str("");
-		int score = m_hds.getCaughtScore();
-		oss << m_hds.getCaughtIndex();
-
-		s = "# Ball " + oss.str() +"\n# Color ";
-		s += colorFromScore(score);
-		s += "\n";
-		m_log.dynamicWrite(s.c_str());
-		
-		oss.str("");
-		oss << score;
-		s = "# Value " + oss.str() + "\n";
-		m_log.dynamicWrite(s.c_str());
-		oss.str("");
-
-		oss << m_score;
-		string s = "# Actuel score " + oss.str() + "\n";
-		m_log.dynamicWrite(s.c_str());
-		oss.str("");
-
-	
-		oss << m_catchs;
-		s = "# Actuel caught number " + oss.str() + "\n";
-		m_log.dynamicWrite(s.c_str());
-		oss.str("");
-
-	
-		oss << m_good_catchs;
-		s= "# Actuel Good caught balls " +  oss.str() + "\n";
-		m_log.dynamicWrite(s.c_str());
-		oss.str("");
-
-		oss << m_bad_catchs;
-		s= "# Actuel of Bad caught balls " +  oss.str() + "\n";
-		m_log.dynamicWrite(s.c_str());
-		oss.str("");
-
-		oss << m_ok_catchs;
-		s= "# Actuel of  Ok caught balls " +  oss.str() + "\n";
-		m_log.dynamicWrite(s.c_str());
-		oss.str("");
-	}
-
 	m_log.dynamicEnd();
 }
 
 void DualTouch::waitFeadBack(){	
-	if(m_hds.isReadyLaunch()){
+	if(!m_Fin_jeu){
+		if(m_hds.isReadyLaunch()){
 		
-		m_time = time(NULL);
-		deleteThrowedObjects();			
-		for (int i=0; i<canonNbr; i++) { // shuffle
-			int r = i + (rand() % ( canonNbr - i)); 
-		    int temp = m_CanonPos[i];
-			m_CanonPos[i] = m_CanonPos[r];
-			m_CanonPos[r] = temp;
-        }
+			m_time = time(NULL);
+			deleteThrowedObjects();	
+			btScalar canons[canonNbr];
 
-		for(int i = 0; i< m_throw_at_once; i++){
-			throwMultiObject(1, m_CanonPos[i],i);
+			int b = (rand() % (canonNbr-4))+2;
+			for (int i=0; i<canonNbr; i++) { // shuffle
+				int r = (b+i) % canonNbr; 		    
+				canons[i] = m_CanonPos[r];			
+			}	
+		
+
+			for(int i = 0; i< m_throw_at_once; i++){
+				throwMultiObject(1, canons[i],i);
+			}
+		
+			if(m_startLog)
+				gameStatus();
+			setHapticParam();
+			m_hds.waitTargetChoice();
+			m_hds.setWaitLunch();	
+			m_log.saveTrajectory(m_trajectory,max_calculated_points);
+			m_eval = true;
+			if(m_throw_at_once < ThronNumber)
+				m_throw_at_once++;
+			m_timerBegan = false;
 		}
-				
-		gameStatus();
-		setHapticParam();
-		m_hds.waitTargetChoice();
-		m_hds.setWaitLunch();	
-		m_log.saveTrajectory(m_trajectory,max_calculated_points);
-		m_eval = true;
-		if(m_throw_at_once < ThronNumber)
-			m_throw_at_once++;
-	}
 	
-	// timed launch
-	time_t now = time(NULL);
-    time_t time = now - m_time;
+		// current time	
+		SYSTEMTIME stime;
+		GetSystemTime(&stime);
+		WORD millis = (stime.wSecond * 1000) + stime.wMilliseconds;
 
-	if(m_physic.collHapend()){
-		m_time = now;					
-		m_hds.Lunch();
-		m_hds.deactivateMove();
-		//setAfterColideCoord();
-	}
 	
+		WORD m = millis - m_log_milis;
 
-	if(!m_hds.isCaught()){
-		if(time > Time){
-			m_time = now;					
-			m_hds.Lunch();
-			m_hds.deactivateMove();
+			if(  m > 0.001  &&  m_startLog)
+			{
+				logDynamic();
+				m_log_milis = m;
+			}
+   
+	
+		// case physics collision
+		if(m_physic.collHapend()){
+			m_log.dynamicBegin();		
+			string	s= "### Collision !!! ### \n " ;	
+			m_log.dynamicWrite(s.c_str());
+			m_log.dynamicEnd();
+			//m_time = now;					
+			//m_hds.Lunch();
+			//m_hds.deactivateMove();
+			//setAfterColideCoord();
 		}
-		time = now - m_log_time;
-		if(time > 1)
-		{
-			logDynamic();
-			m_log_time = now;
+	
+		string* s = new string("");
+		ostringstream oss;
+
+		// timed launch
+		time_t now = time(NULL);
+		time_t time = now - m_time;
+		if(testIfCanThrow()){
+			
+			if(time > Time){
+				m_time = now;					
+				m_hds.Lunch();
+				m_hds.deactivateMove();		
+				m_renderer.stopShowTime();
+			}else{
+				oss << (int) (Time - time);	
+				*s = " Temps avant lancer ... " + oss.str() + " ! " ;		
+				m_renderer.setLeftToThrow(s->c_str());
+			}
+
+		}else{
+			m_time = now ;	
+			if(!m_feed)
+				m_renderer.setDir(&m_hds.getEffectorPosition(),&m_hds.getImpactDir());
 		}
+
+		// eval score
+		if(m_hds.isCaught() && m_eval){
+			m_eval = false;
+			if( m_startLog){
+				evaluateScore();
+				logDynamic();
+			}
+			m_hds.freeIf();
+		}
+		
+		oss.str("");
+		*s = "";
+		if(m_score > 0){
+			oss << m_score;
+			*s += " Votre score : " + oss.str() + ". " + m_note;
+		}
+
+		m_renderer.setText(s);
+
 	}else
-		m_time = now ;	
-
-	if(m_hds.isCaught() && m_eval){
-	    m_eval = false;
-		evaluateScore();
-		logDynamic();
-	}
-
-	//logDynamic();
-
-	ostringstream oss;
-	oss << (int) (Time - time);
-	string* s = new string();
-	*s = " Temps restant avant lancer ... " + oss.str() + " secondes  ! " ;
-	oss.str("");	
-	if(m_score > 0){
-		oss << m_score;
-		*s += " Votre score : " + oss.str() + ". " + m_note;
-	}
-
-	m_renderer.setText(s);
+		saveLogDynamic();		
+	
 }
 
 void DualTouch::idle()
 {	
+	
 	m_hds.run();	
 	m_physic.run();
 	m_physic.tick();
 	m_hds.feedback(*m_physic.m_dynamicsWorld);	
+	inPauseMode();
 	
-	waitFeadBack();
+}
+
+void DualTouch::inPauseMode(){
+	if(!m_wait){
+		start();
+		randomMoveCanons();
+		waitFeadBack();
+	}else{
+		time_t now = time(NULL);
+		time_t time = now - m_waitTime;
+		m_renderer.setWait(PauseLenght - time);
+		if(time > PauseLenght){			
+			m_wait = false;
+			m_renderer.stopWait();
+		}
+	}
 }
 
 void DualTouch::tickCallback(btDynamicsWorld *world, btScalar timeStep)
@@ -811,6 +963,20 @@ void DualTouch::newConstraint(void *ptr ,btRigidBody * body,unsigned int id)
 	}
 }
 
+bool DualTouch::testIfCanThrow(){
+	if(!m_timerBegan && m_throwed_object_list.size() > 0 && !m_hds.isCaught()){
+		btVector3 eff = m_hds.getEffectorPosition();
+		btVector3 ball0 = m_throwed_object_list[0]->getTransform()->getOrigin();
+		if(eff.y() > ball0.y()){
+			m_timerBegan = true;
+			return true;
+		}
+		return false;
+	}
+	m_timerBegan = true;
+	return true;
+}
+
 void DualTouch::deleteConstraint(void * ptr,btRigidBody * body,unsigned int id)
 {
 	DualTouch * my = (DualTouch *)ptr;
@@ -832,6 +998,26 @@ void DualTouch::deleteConstraint(void * ptr,btRigidBody * body,unsigned int id)
 	}
 }
 
+void DualTouch::start(){
+
+	if(!m_startLog){
+		time_t now = time(NULL);	
+		time_t time = now - m_adaptationTime;
+		if(time > LearnTime -10){
+
+			m_renderer.showStart(true,(int) (LearnTime - time));
+		}else
+			m_renderer.showStart(true,-1);
+
+		if(time > LearnTime){
+			m_time = now;
+			m_startLog = true; 
+			m_renderer.showStart(false,0);
+		}	
+	}
+		
+}
+
 void DualTouch::keyboard1(unsigned char key, int x, int y)
 {
 	//m_camera1.m_key = key;
@@ -849,6 +1035,12 @@ void DualTouch::keyboard1(unsigned char key, int x, int y)
 						cout << " Activate Feedback " << endl;
 					else
 						cout << " Deactivate  Feedback " << endl;
+					break;
+		case('s'):  m_startLog = !m_startLog;			       
+					if(m_feed)
+						cout << " Activate log " << endl;
+					else
+						cout << " Deactivate  log " << endl;
 					break;
 		case('+'):
 		case('p'): m_velocityY += 0.01f;
@@ -902,3 +1094,4 @@ void DualTouch::motion2(int x, int y)
 {
 	m_camera2.mouseMotion(x,y);
 }
+
