@@ -10,19 +10,19 @@
 #include <Windows.h>
 
 const btScalar Ball_Size = 0.35;
-const btScalar Effector_Mass = 4;
-const btScalar Effector_Size = 0.16;
+const btScalar Effector_Mass = 4.2;
+const btScalar Effector_Size = 0.17;
 const btScalar m_timeSpeed = 0.01;
-const int canonNbr = 10;
+const int canonNbr = 8;
 const float Gut_vz = 5.0f;
 const float Gut_vy = 20.0f;
 const double Time = 3 ;
-const double LearnTime = 60 ;
+const double LearnTime = 90 ;
 const int ThrowV = 6;
 const int Nbr_launch_game = 5*ThrowV;
 const unsigned int max_calculated_points = 600;
 const btScalar max_canon_dep = 1;
-const int PauseLenght = 20;
+const int PauseLenght = 30;
 
 using namespace std;
 
@@ -34,20 +34,24 @@ public:
 	~DualTouch(void);
 
 	struct ball{
+		struct ball(void){			
+			isBall = false;
+		};
 		btVector3 pos;
 		int score;
+		bool isBall;
 	};
 
 	
 	struct log_dyn{
 		struct log_dyn(void){
 			caught = false;
-			phase = false;
+			phase = false;			
 		};
 		struct ball throwed[ThronNumber];
 		struct myTime currentTime;
 		btVector3 effcPosition;
-		btScalar vitesseLancer;
+		btScalar vitesseLancer;		
 		bool caught;
 		bool phase;
 		int phaseNbr;

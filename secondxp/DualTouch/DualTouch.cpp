@@ -8,6 +8,8 @@ DualTouch::DualTouch(void)
 
 DualTouch::~DualTouch(void)
 { 
+	printf(" Saving logs please wait ....... \n");
+	saveLogDynamic();
 	deleteThrowedObjects();
 	m_effObj->m_transform = NULL;
 	//m_hds.m_ptr = NULL;
@@ -180,6 +182,7 @@ void DualTouch::gameStatus(){
 		if(m_left_to_launch % ThrowV == 0){		
 			m_actualV = m_throwVelocity[m_vIndex];
 			m_vIndex = (m_vIndex + 1 % ThrowV);
+			m_throw_at_once = 3;
 		}
 
 		ostringstream oss;
@@ -667,6 +670,7 @@ void DualTouch::logDynamic(){
 	for(unsigned int i =0; i < m_throwed_rigid_list.size(); i++){
 		myLog->throwed[i].pos = m_throwed_rigid_list[i]->getWorldTransform().getOrigin();
 		myLog->throwed[i].score = m_throwed_object_list[i]->getScore();
+		myLog->throwed[i].isBall = true;
 	}
 
 	myLog->caught = m_hds.isCaught();
@@ -720,29 +724,38 @@ void DualTouch::saveLogDynamic(){
 			oss.str("");
 		}
 		else{
-			for(unsigned int i =0; i < m_throwed_rigid_list.size(); i++)
+				
+			int j =0;
+			for(unsigned int i =0; i < ThronNumber; i++)
 			{
-				oss << (unsigned int) i;
-				btVector3 temp = m_logsVec[st]->throwed[i].pos;
-				s = "# Ball " + oss.str() +"\n# Position ";
-				s += stringFromBtvector(&temp);
-				s+= "\n";
-				m_log.dynamicWrite(s.c_str());
+				if(m_logsVec[st]->throwed[i].isBall){
+					oss << (unsigned int) i;
+					btVector3 temp = m_logsVec[st]->throwed[i].pos;
+					s = "# Ball " + oss.str() +"\n# Position ";
+					s += stringFromBtvector(&temp);
+					s+= "\n";
+					m_log.dynamicWrite(s.c_str());
 
-				int score = m_logsVec[st]->throwed[i].score;
+					int score = m_logsVec[st]->throwed[i].score;
 
-				s = "# Color ";
-				s += colorFromScore(score);
-				s += "\n";
-				m_log.dynamicWrite(s.c_str());
+					s = "# Color ";
+					s += colorFromScore(score);
+					s += "\n";
+					m_log.dynamicWrite(s.c_str());
 
 		
-				oss.str("");
-				oss << score;
-				s = "# Value " + oss.str() + "\n";
-				m_log.dynamicWrite(s.c_str());
-				oss.str("");
+					oss.str("");
+					oss << score;
+					s = "# Value " + oss.str() + "\n";
+					m_log.dynamicWrite(s.c_str());
+					oss.str("");
+					j++;
+				}
 			}
+
+			oss << j;
+			s = "# NBR balls " + oss.str() +"\n ";				
+			m_log.dynamicWrite(s.c_str());
 
 			oss.str("");
 			oss << m_logsVec[st]->vitesseLancer;
@@ -827,7 +840,7 @@ void DualTouch::waitFeadBack(){
 			setHapticParam();
 			m_hds.waitTargetChoice();
 			m_hds.setWaitLunch();	
-			m_log.saveTrajectory(m_trajectory,max_calculated_points);
+			//m_log.saveTrajectory(m_trajectory,max_calculated_points);
 			m_eval = true;
 			if(m_throw_at_once < ThronNumber)
 				m_throw_at_once++;
@@ -842,7 +855,7 @@ void DualTouch::waitFeadBack(){
 	
 		WORD m = millis - m_log_milis;
 
-			if(  m > 0.001  &&  m_startLog)
+			if(  m > 0.0001  &&  m_startLog && m_throwed_object_list.size() > 0)
 			{
 				logDynamic();
 				m_log_milis = m;
@@ -860,7 +873,7 @@ void DualTouch::waitFeadBack(){
 			//m_hds.deactivateMove();
 			//setAfterColideCoord();
 		}
-	
+	   
 		string* s = new string("");
 		ostringstream oss;
 
@@ -876,7 +889,7 @@ void DualTouch::waitFeadBack(){
 				m_renderer.stopShowTime();
 			}else{
 				oss << (int) (Time - time);	
-				*s = " Temps avant lancer ... " + oss.str() + " ! " ;		
+				*s = " Prochain lancer dans  ... " + oss.str() + " s ! " ;		
 				m_renderer.setLeftToThrow(s->c_str());
 			}
 
@@ -905,8 +918,8 @@ void DualTouch::waitFeadBack(){
 
 		m_renderer.setText(s);
 
-	}else
-		saveLogDynamic();		
+	}
+				
 	
 }
 
@@ -934,7 +947,7 @@ void DualTouch::inPauseMode(){
 			m_wait = false;
 			m_renderer.stopWait();
 		}
-	}
+	}		
 }
 
 void DualTouch::tickCallback(btDynamicsWorld *world, btScalar timeStep)

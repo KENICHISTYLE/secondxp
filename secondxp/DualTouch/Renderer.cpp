@@ -1034,12 +1034,12 @@ void Renderer::StartMessage(){
 
 		glColor3fv(light_blue);
 
-		s = " Game Start in :  "; 
+		s = " Le jeu commence dans :  "; 
 
 		std::ostringstream oss;
 		oss << m_leftToStart;
 
-		s += oss.str();
+		s += oss.str() + " s ";
 
 		glWrite(glGetViewportWidth()/2 -100 , glGetViewportHeight()/2 +100, GLUT_BITMAP_TIMES_ROMAN_24, &s);
 	}else{
@@ -1115,13 +1115,13 @@ void Renderer::setWait(int time){
 
 void Renderer::showWait(){
 	if(m_waitMode){
-		std::string s = " Wait for :  "; 
+		std::string s = " Attente de :  "; 
 
 		std::ostringstream oss;
 		oss << m_waitTime;
 
-		s += oss.str();
-		
+		s += oss.str()+ " s ";
+		glColor3fv(light_blue);
 		glWrite(glGetViewportWidth()/2 -50 , glGetViewportHeight() - 100 , GLUT_BITMAP_TIMES_ROMAN_24, &s);
 	}
 }

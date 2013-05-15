@@ -74,9 +74,7 @@ HDCallbackCode HDCALLBACK HapticDevice::aSchedule(void *pUserData)
 						the actual position to the desired position. */
 														
 					force = STIFFNESS*distance;						
-					force *=  BALL_MASS;
-					force[2] += 0.1;
-					force[1] += -0.1;
+					force *=  BALL_MASS;					
 					force[0] = 0;
 				} 
 			}
