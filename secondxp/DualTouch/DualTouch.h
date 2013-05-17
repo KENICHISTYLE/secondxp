@@ -39,14 +39,15 @@ public:
 		};
 		btVector3 pos;
 		int score;
-		bool isBall;
+		bool isBall;		
 	};
 
 	
 	struct log_dyn{
 		struct log_dyn(void){
 			caught = false;
-			phase = false;			
+			phase = false;	
+			lancer = false;
 		};
 		struct ball throwed[ThronNumber];
 		struct myTime currentTime;
@@ -54,6 +55,7 @@ public:
 		btScalar vitesseLancer;		
 		bool caught;
 		bool phase;
+		bool lancer;
 		int phaseNbr;
 		int caughtValue;
 		int score;
@@ -61,6 +63,7 @@ public:
 		int goodCatchNbr;
 		int badCatchNbr;
 		int okCatchNbr;
+		int index;
 	};
 
 	void reshape(int width, int height);
@@ -116,7 +119,7 @@ public:
 	void changeParam();
 	void inPauseMode();
 
-	void logDynamic();
+	void logDynamic(bool lancer);
 	void saveLogDynamic();
 	string stringFromBtvector(btVector3* vec);
 	string colorFromScore(int score);

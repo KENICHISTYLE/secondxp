@@ -60,7 +60,7 @@ void DualTouch::init1()
 	m_timerBegan = false;
 	m_waitTime = time(NULL);
 	//m_camera2.moveTo(btVector3(-0.5,-10,3));
-	//changeParam();
+	changeParam();
 	m_hds.addDevice("PHANToM",m_camera1.m_view);
 	//m_hds.addDevice("PHANToM 2",m_camera2.m_view);
 	m_hds.init();
@@ -633,8 +633,8 @@ string DualTouch::stringFromBtvector(btVector3* vec){
 	ostringstream oss;
 	double x,y,z;
 	x = (btScalar) vec->getX();
-	y = (btScalar) vec->getX();
-	z = (btScalar) vec->getX();
+	y = (btScalar) vec->getY();
+	z = (btScalar) vec->getZ();
 
 	oss << x ;
 	
@@ -661,21 +661,23 @@ string DualTouch::colorFromScore(int score){
 	}
 }
 
-void DualTouch::logDynamic(){
+void DualTouch::logDynamic(bool lancer){
 	// 
 	struct log_dyn* myLog = new struct log_dyn();
 	myLog->effcPosition = m_hds.getEffectorPosition();
 	myLog->vitesseLancer = m_velocityY;
 	myLog->currentTime = m_log.getCurrent();
+	myLog->lancer = lancer;
 	for(unsigned int i =0; i < m_throwed_rigid_list.size(); i++){
-		myLog->throwed[i].pos = m_throwed_rigid_list[i]->getWorldTransform().getOrigin();
+		myLog->throwed[i].pos = m_throwed_object_list[i]->getTransform()->getOrigin();
 		myLog->throwed[i].score = m_throwed_object_list[i]->getScore();
-		myLog->throwed[i].isBall = true;
+		myLog->throwed[i].isBall = true;			
 	}
 
 	myLog->caught = m_hds.isCaught();
 
 	if(myLog->caught){
+		myLog->index = m_hds.getCaughtIndex();
 		myLog->caughtValue = m_hds.getCaughtScore();
 		myLog->score = m_score;
 		myLog->catchNbr = m_catchs;
@@ -708,6 +710,11 @@ void DualTouch::saveLogDynamic(){
 		s += oss.str() + " **** \n";
 		oss.str("");
 		m_log.dynamicWrite(s.c_str());
+
+		if( m_logsVec[st]->lancer){
+			s = "# lancer \n";		
+			m_log.dynamicWrite(s.c_str());
+		}
 
 		btVector3 temp = m_logsVec[st]->effcPosition;
 		s = "# Effector position ";
@@ -766,14 +773,15 @@ void DualTouch::saveLogDynamic(){
 			if(m_logsVec[st]->caught){
 				m_log.dynamicWrite("## A ball was caught \n");
 				oss.str("");
-				int score = m_logsVec[st]->caughtValue;
-				oss << score;
+
+				int score = m_logsVec[st]->caughtValue;		
+				oss << m_logsVec[st]->index;
 
 				s = "# Ball " + oss.str() +"\n# Color ";
 				s += colorFromScore(score);
 				s += "\n";
-				m_log.dynamicWrite(s.c_str());
-		
+				m_log.dynamicWrite(s.c_str());						
+
 				oss.str("");
 				oss << score;
 				s = "# Value " + oss.str() + "\n";
@@ -837,6 +845,7 @@ void DualTouch::waitFeadBack(){
 		
 			if(m_startLog)
 				gameStatus();
+			logDynamic(true);
 			setHapticParam();
 			m_hds.waitTargetChoice();
 			m_hds.setWaitLunch();	
@@ -857,7 +866,7 @@ void DualTouch::waitFeadBack(){
 
 			if(  m > 0.0001  &&  m_startLog && m_throwed_object_list.size() > 0)
 			{
-				logDynamic();
+				logDynamic(false);
 				m_log_milis = m;
 			}
    
@@ -904,7 +913,7 @@ void DualTouch::waitFeadBack(){
 			m_eval = false;
 			if( m_startLog){
 				evaluateScore();
-				logDynamic();
+				logDynamic(false);
 			}
 			m_hds.freeIf();
 		}
